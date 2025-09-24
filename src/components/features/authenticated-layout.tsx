@@ -8,11 +8,20 @@ interface AuthenticatedLayoutProps {
 
 const AuthenticatedLayout: FC<AuthenticatedLayoutProps> = ({ children }) => {
     return (
-        <Box>
-            <div>
+        <Box style={{
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column'
+        }}>
+            <Box style={{ flexShrink: 0 }}>
                 <HeaderComponent />
-            </div>
-            {children}
+            </Box>
+            <Box style={{
+                flex: 1,
+                minHeight: 'calc(100vh - 66px)'
+            }}>
+                {children}
+            </Box>
         </Box>
     )
 }
