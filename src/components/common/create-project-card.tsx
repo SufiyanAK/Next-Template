@@ -1,5 +1,8 @@
+'use client';
+
 import { colors } from '@/utils/customStyles';
 import { Anchor, Group, Text } from '@mantine/core';
+import { useRouter } from 'next/navigation';
 import { FC, ReactNode } from 'react';
 
 interface CreateProjectCardComponentProps {
@@ -8,14 +11,20 @@ interface CreateProjectCardComponentProps {
     color?: string;
     title: string;
     description: string;
-    onClick?: () => void;
+    onClickPath: string;
 }
 
-const CreateProjectCardComponent: FC<CreateProjectCardComponentProps> = ({ hasIcon, title, description, Icon, color = colors.primary, onClick }) => {
+const CreateProjectCardComponent: FC<CreateProjectCardComponentProps> = ({ hasIcon, title, description, Icon, color = colors.primary, onClickPath }) => {
+    const router = useRouter();
+
+    const handleOnClick = () => {
+        router.push(onClickPath);
+    }
+
     return (
         <Anchor
             underline='never'
-            onClick={onClick}
+            onClick={handleOnClick}
             style={{
                 backgroundColor: colors.white,
                 padding: '24px',

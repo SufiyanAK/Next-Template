@@ -3,28 +3,28 @@ import { colors } from "@/utils/customStyles";
 import { Box, Container, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { Clock, File, Folder, Plus } from "lucide-react";
 
-const HomeComponent = () => {
-    const recentProjects = [
-        {
-            id: 1,
-            name: "Invoice Processing",
-            description: "Automated invoice data extraction and entry",
-            date: "15/10/2023"
-        },
-        {
-            id: 2,
-            name: "Customer Onboarding",
-            description: "New customer data verification and system setup",
-            date: "15/10/2023"
-        },
-        {
-            id: 3,
-            name: "Email Automation",
-            description: "Automated email response and categorization",
-            date: "15/10/2023"
-        }
-    ];
+const recentProjects = [
+    {
+        id: 1,
+        name: "Invoice Processing",
+        description: "Automated invoice data extraction and entry",
+        date: "15/10/2023"
+    },
+    {
+        id: 2,
+        name: "Customer Onboarding",
+        description: "New customer data verification and system setup",
+        date: "15/10/2023"
+    },
+    {
+        id: 3,
+        name: "Email Automation",
+        description: "Automated email response and categorization",
+        date: "15/10/2023"
+    }
+];
 
+const HomeComponent = () => {
     return (
         <Box
             style={{
@@ -63,7 +63,7 @@ const HomeComponent = () => {
                             Icon={<Plus size={20} color={colors.primary} />}
                             title="Create New Project"
                             description="Start building a new automation workflow from scratch"
-                        // onClick={() => { }}
+                            onClickPath="/projects/new"
                         />
                         <CreateProjectCardComponent
                             hasIcon={true}
@@ -71,7 +71,7 @@ const HomeComponent = () => {
                             color={colors.secondary}
                             title="Open Recent Project"
                             description="Continue working on an existing automation project"
-                        // onClick={() => { }}
+                            onClickPath="/projects/recent"
                         />
                     </Group>
 
