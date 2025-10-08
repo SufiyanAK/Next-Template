@@ -12,10 +12,12 @@
   --color-text-primary: #374151;
   --color-text-secondary: #6B7280;
 
-
+  
+  
   /* Text Colors */
   --color-primary: #3B82F6;
   --color-secondary: #4B5563;
+  --color-tertiary: #E5E7EB;
   --color-light: #CCCCCC;
   --color-green: #10B981;
   --color-grayish-blue: #374151;
@@ -43,6 +45,11 @@ body {
   background: var(--background);
   color: #1F2937;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.stepper-icons {
+  background: transparent;
+  position: relative;
 }
 
 /* Responsive utilities */

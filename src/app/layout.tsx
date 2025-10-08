@@ -4,6 +4,7 @@ import MainLayout from "@/components/features/main-layout";
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import '@mantine/core/styles.css';
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "RPA",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <MainLayout>
           {children}
         </MainLayout>
+        <Toaster richColors closeButton />
       </body>
     </html>
   );

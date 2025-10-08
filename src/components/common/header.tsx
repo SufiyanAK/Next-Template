@@ -61,11 +61,6 @@ const HeaderComponent = () => {
                     variant="transparent"
                     size="lg"
                     c={colors.white}
-                    style={{
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }}
                 >
                     <Settings size={20} />
                 </ActionIcon>
@@ -74,11 +69,6 @@ const HeaderComponent = () => {
                     variant="transparent"
                     size="lg"
                     c={colors.white}
-                    style={{
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }}
                 >
                     <HelpCircle size={20} />
                 </ActionIcon>
@@ -87,11 +77,6 @@ const HeaderComponent = () => {
                     variant="transparent"
                     size="lg"
                     c={colors.white}
-                    style={{
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }}
                 >
                     <Bell size={20} />
                 </ActionIcon>
