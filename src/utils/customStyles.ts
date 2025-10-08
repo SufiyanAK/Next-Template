@@ -8,6 +8,7 @@ export const colors = {
     // Text Colors
     primary: '#3b82f6',
     secondary: '#4B5563',
+    tertiary: '#E5E7EB',
     light: '#cccccc',
     green: '#10b981',
     grayishBlue: '#374151',
