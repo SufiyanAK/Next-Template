@@ -6,7 +6,7 @@ export const colors = {
     textPrimary: '#374151',
     textSecondary: '#6B7280',
     // Text Colors
-    primary: '#3b82f6',
+    primary: '#2563EB',
     secondary: '#4B5563',
     tertiary: '#E5E7EB',
     light: '#cccccc',

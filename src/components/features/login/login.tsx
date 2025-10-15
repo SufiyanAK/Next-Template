@@ -1,3 +1,5 @@
+'use client';
+
 import {
     Group,
     Stack,
@@ -12,8 +14,10 @@ import {
     Paper
 } from '@mantine/core';
 import customStyles, { colors } from '@/utils/customStyles';
+import { useRouter } from 'next/navigation';
 
 const LoginComponent = () => {
+    const router = useRouter();
     return (
         <Group justify='center' style={{ minHeight: '100vh' }} bg={customStyles.colors.primary}>
             <Box
@@ -116,6 +120,7 @@ const LoginComponent = () => {
                                 borderRadius: 8,
                                 height: 48
                             }}
+                            onClick={() => router.push('/home')}
                         >
                             Sign In
                         </Button>
