@@ -14,6 +14,7 @@
     "@mantine/form": "^8.2.7",
     "@mantine/hooks": "^8.2.7",
     "@reduxjs/toolkit": "^2.8.2",
+    "@xyflow/react": "^12.8.6",
     "axios": "^1.11.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",

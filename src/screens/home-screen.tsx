@@ -34,7 +34,7 @@ const HomeComponent = () => {
                 justifyContent: 'center'
             }}
         >
-            <Container size="lg" py={40} style={{ width: '100%' }}>
+            <Container size="lg" style={{ width: '100%' }}>
                 <Stack gap={40} justify="center" align="center">
                     {/* Header Section */}
                     <Stack align="center" gap={8}>

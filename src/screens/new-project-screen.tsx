@@ -62,7 +62,7 @@ const NewProjectComponent = () => {
 
     return (
         <Box p={24}>
-            <Container size="lg" py={40}>
+            <Container size="lg">
                 {/* Title - component */}
                 <TitleComponent
                     title='Create New Process'
@@ -90,7 +90,10 @@ const NewProjectComponent = () => {
                         <TemplateFormComponent
                             handleCancel={handleCancel}
                             handleBack={handleBack}
-                            handleNext={() => toast.success('Project Created Successfully!')}
+                            handleNext={() => {
+                                router.push('/dashboard');
+                                toast.success('Project Created Successfully!')
+                            }}
                         />
                     )
                 }
