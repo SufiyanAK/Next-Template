@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@xyflow/react": "^12.8.6",
     "axios": "^1.11.0",
+    "cookies-next": "^6.1.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",
     "react": "19.1.0",

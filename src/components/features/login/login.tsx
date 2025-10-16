@@ -1,23 +1,54 @@
 'use client';
 
+import { loginUser } from '@/store/actions/auth.action';
+import { logoutUser } from '@/store/slices/auth-slice/auth.slice';
+import { RootState, useAppDispatch, useAppSelector } from '@/store/store';
+import customStyles, { colors } from '@/utils/customStyles';
 import {
-    Group,
-    Stack,
-    Title,
-    Text,
-    TextInput,
-    PasswordInput,
-    Checkbox,
-    Button,
     Anchor,
     Box,
-    Paper
+    Button,
+    Checkbox,
+    Group,
+    Paper,
+    PasswordInput,
+    Stack,
+    Text,
+    TextInput,
+    Title
 } from '@mantine/core';
-import customStyles, { colors } from '@/utils/customStyles';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const LoginComponent = () => {
     const router = useRouter();
+
+    const { authenticatedUser } = useAppSelector((state: RootState) => state.authState);
+
+    console.log("authenticatedUser =>>>>> ", authenticatedUser);
+
+    const dispatch = useAppDispatch();
+    const [loginCredentials, setLoginCredentials] = useState({ email: '', password: '' });
+
+    const handleLogin = async () => {
+        dispatch(loginUser({
+            userData: {
+                email: loginCredentials.email,
+                password: loginCredentials.password
+            },
+            onSuccess: (response) => {
+                console.log('Login successful:', response);
+                toast.success('Login successful!');
+                router.push('/home');
+            },
+            onError: (error) => {
+                console.error('Login failed:', error);
+                toast.error(`Login failed: ${error}`);
+            }
+        }));
+    }
+
     return (
         <Group justify='center' style={{ minHeight: '100vh' }} bg={customStyles.colors.primary}>
             <Box
@@ -50,6 +81,7 @@ const LoginComponent = () => {
                                 fontWeight: 'bold',
                                 fontSize: '18px'
                             }}
+                            onClick={() => dispatch(logoutUser())}
                         >
                             RPA
                         </Box>
@@ -74,6 +106,8 @@ const LoginComponent = () => {
                             radius={8}
                             label="Email address"
                             placeholder="name@company.com"
+                            value={loginCredentials.email}
+                            onChange={(e) => setLoginCredentials({ ...loginCredentials, email: e.target.value })}
                             size="md"
                             styles={{
                                 label: { color: colors.textPrimary, marginBottom: 4 },
@@ -88,6 +122,8 @@ const LoginComponent = () => {
                             radius={8}
                             label="Password"
                             placeholder="********"
+                            value={loginCredentials.password}
+                            onChange={(e) => setLoginCredentials({ ...loginCredentials, password: e.target.value })}
                             size="md"
                             styles={{
                                 label: { color: colors.textPrimary, marginBottom: 4 },
@@ -120,7 +156,7 @@ const LoginComponent = () => {
                                 borderRadius: 8,
                                 height: 48
                             }}
-                            onClick={() => router.push('/home')}
+                            onClick={handleLogin}
                         >
                             Sign In
                         </Button>

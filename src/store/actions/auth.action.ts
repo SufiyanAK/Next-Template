@@ -1,63 +1,92 @@
+import API_ENDPOINTS from "@/constants/api-endpoints";
 import {
     ForgotPasswordRequest,
     ForgotPasswordResponse,
     LoginData,
-    LoginResponse,
-    UserDataResponse
+    LoginResponse
 } from "@/types/auth.types";
 import { apiPost } from "@/utils/api-requests";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { setCookie } from "cookies-next";
+
+// Interface for login parameters including response handler
+interface LoginUserParams {
+    userData: LoginData;
+    onSuccess?: (response: LoginResponse) => void;
+    onError?: (error: string) => void;
+}
 
 
 // Thunk to handle login
-export const loginUser = createAsyncThunk<UserDataResponse | null, LoginData>(
+export const loginUser = createAsyncThunk<LoginResponse | null, LoginUserParams>(
     "screen/loginScreen",
-    async (userData, { rejectWithValue }) => {
+    async ({ userData, onSuccess, onError }, { rejectWithValue }) => {
         try {
-            const response = await apiPost("/Auth/IAuthFeature/Login", userData);
-
-            console.log('Login Response::', response)
+            const response = await apiPost(API_ENDPOINTS.login, userData);
 
             // Validate response status
             if (response.status !== 200) {
                 const errorMessage =
                     response.data?.message || `Login failed with status ${response.status}`;
+
+                // Call error handler if provided
+                if (onError) {
+                    onError(errorMessage);
+                }
+
                 return rejectWithValue(errorMessage);
             }
 
-            // Parse and validate response data
+            // The response now directly contains token and user
             const result: LoginResponse = response.data;
-            if (!result.isRequestSuccess) {
-                return rejectWithValue(result.message || "Request was not successful");
+
+            if (result.token && result.user) {
+                // Store token in localStorage for axios interceptor
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('RPAAuthToken', result.token);
+                    
+                    // Also set cookie for server-side middleware access
+                    setCookie('RPAAuthToken', result.token);
+                }
+
+                // Call success handler if provided
+                if (onSuccess) {
+                    onSuccess(result);
+                }
             }
 
-            if (result.data?.token && result.data?.refreshToken) {
-                console.log('token:', result.data?.token);
-                console.log('refresh token:', result.data?.refreshToken)
-                // tokenStorage.saveToken(result.data.token);
-                // tokenStorage.saveRefreshToken(result.data.refreshToken);
-            }
-
-            return result.data as UserDataResponse;
+            return result as LoginResponse;
         } catch (error: any) {
             // Network or unexpected error handling
             if (axios.isAxiosError(error)) {
-                console.error("Axios Error:", {
-                    message: error.message,
-                    code: error.code,
-                    response: error.response,
-                    request: error.request,
-                });
+                // console.error("Axios Error:", {
+                //     message: error.message,
+                //     code: error.code,
+                //     response: error.response,
+                //     request: error.request,
+                // });
 
                 const errorMessage =
                     error.response?.data?.message ||
                     (error.code === "ERR_NETWORK" ? "Network Error" : error.message);
+
+                // Call error handler if provided
+                if (onError) {
+                    onError(errorMessage);
+                }
+
                 return rejectWithValue(errorMessage);
             }
 
-            console.error("Unexpected Error:", error);
-            return rejectWithValue("An unexpected error occurred");
+            const unexpectedError = "An unexpected error occurred";
+
+            // Call error handler if provided
+            if (onError) {
+                onError(unexpectedError);
+            }
+
+            return rejectWithValue(unexpectedError);
         }
     }
 );

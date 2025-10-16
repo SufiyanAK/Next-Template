@@ -3,15 +3,12 @@ import axiosInstance from "./axios-instance";
 // import { handleRefreshToken } from "@/constants/refresh-token";
 
 // Generic function for GET requests
-export const apiGet = async (endpoint: string, authToken?: string, params?: { [key: string]: number | string }) => {
+export const apiGet = async (endpoint: string, params?: { [key: string]: number | string }) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.GET,
             url: endpoint,
-            params,
-            headers: {
-                'Auth-Token': authToken
-            }
+            params
         });
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
@@ -30,15 +27,12 @@ export const apiGet = async (endpoint: string, authToken?: string, params?: { [k
 };
 
 // Generic function for POST requests
-export const apiPost = async (endpoint: string, payload: any, authToken?: string) => {
+export const apiPost = async (endpoint: string, payload: any) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.POST,
             url: endpoint,
-            data: payload,
-            headers: {
-                'Auth-Token': authToken
-            }
+            data: payload
         });
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
@@ -54,15 +48,12 @@ export const apiPost = async (endpoint: string, payload: any, authToken?: string
 };
 
 // Generic function for PUT requests
-export const apiPut = async (endpoint: string, payload: any, authToken?: string) => {
+export const apiPut = async (endpoint: string, payload: any) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.PUT,
             url: endpoint,
-            data: payload,
-            headers: {
-                'Auth-Token': authToken
-            }
+            data: payload
         });
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
@@ -78,14 +69,11 @@ export const apiPut = async (endpoint: string, payload: any, authToken?: string)
 };
 
 // Generic function for DELETE requests
-export const apiDelete = async (endpoint: string, authToken?: string) => {
+export const apiDelete = async (endpoint: string) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.DELETE,
-            url: endpoint,
-            headers: {
-                'Auth-Token': authToken
-            }
+            url: endpoint
         });
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
