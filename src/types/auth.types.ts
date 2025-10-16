@@ -1,28 +1,36 @@
-export interface UserDataResponse {
-    data: string
-    token: string
-    refreshToken: string
+export interface Role {
+    id: number;
+    name: string;
+    type: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface User {
+    id: number;
+    roleId: number;
+    email: string;
+    displayName: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface LoginResponse {
+    token: string;
+    user: User;
 }
 
 export interface ForgotPasswordResponse {
-    data: string
+    data: string;
     isRequestSuccess: string;
     message: string;
 }
 
 export interface ForgotPasswordRequest {
-    data: string
+    data: string;
 }
 
 export interface LoginData {
-    data: string
-}
-
-export interface LoginResponse {
-    isRequestSuccess: string;
-    message: string;
-    data: {
-        refreshToken: string;
-        token: string;
-    }
+    email: string;
+    password: string;
 }

@@ -6,6 +6,7 @@ import { colors } from "@/utils/customStyles";
 import { ActionIcon, Anchor, Group, Menu, Text } from "@mantine/core";
 import { Bell, ChevronDown, HelpCircle, LogOut, Settings, User, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { deleteCookie } from "cookies-next";
 
 const HeaderComponent = () => {
     const dispatch = useAppDispatch()
@@ -15,9 +16,9 @@ const HeaderComponent = () => {
         // Clear authentication state
         dispatch(logoutUser());
 
-        // Clear local storage (if you store tokens there)
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
+        // Clear local storage and cookies
+        localStorage.removeItem('RPAAuthToken');
+        deleteCookie('RPAAuthToken');
 
         // Redirect to login page
         router.push('/login');

@@ -1,20 +1,20 @@
-'use server';
+/***** Axios Configuration File *****/
 
 import API_ENDPOINTS from '@/constants/api-endpoints';
 import axios, {
-    AxiosError,
     AxiosInstance,
-    AxiosResponse,
     InternalAxiosRequestConfig,
+    AxiosResponse,
+    AxiosError,
 } from 'axios';
-import { cookies } from 'next/headers';
+import { getCookie } from 'cookies-next';
 
 // ---- Environment Variables ----
 // In your .env file, make sure you have:
 // AUTH_BACKEND_URL=/api/backend/auth
 // SERVICE_BACKEND_URL=/api/backend/service
 // or point directly to backend if skipping proxy
-const API_BASE_URL = API_ENDPOINTS.baseUrl || '/api/backend';
+const API_BASE_URL = API_ENDPOINTS.backend || '/api/backend';
 
 // ---- Default Axios Options ----
 const defaultOptions = {
@@ -24,16 +24,16 @@ const defaultOptions = {
     },
 };
 
-const cookieStore = await cookies();
-
 // ---- Create Axios Instance ----
 const axiosInstance: AxiosInstance = axios.create(defaultOptions);
 
 // ---- Request Interceptor ----
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-        // Example: Add token from cookies (if available)
-        const token = cookieStore.get('AuthToken') as string | undefined;
+        // Get token from localStorage (client-side) or cookies (server-side)
+
+        // Server-side: use cookies
+        const token = getCookie('RPAAuthToken') as string | undefined;
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;

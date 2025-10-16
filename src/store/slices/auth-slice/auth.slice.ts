@@ -1,11 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { loginUser, forgetPassword } from '@/store/actions/auth.action';
-import { ForgotPasswordResponse, UserDataResponse } from '@/types/auth.types';
+import { ForgotPasswordResponse, User, LoginResponse } from '@/types/auth.types';
 
 interface AuthState {
-    authenticatedUser: UserDataResponse | null;
+    authenticatedUser: User | null;
     authToken: string | null;
-    refreshToken: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
@@ -17,7 +16,6 @@ interface AuthState {
 const initialState: AuthState = {
     authenticatedUser: null,
     authToken: null,
-    refreshToken: null,
     isAuthenticated: false,
     isLoading: false,
     error: null,
@@ -36,7 +34,6 @@ const authSlice = createSlice({
             state.isLoading = false;
             state.error = null;
             state.authToken = null;
-            state.refreshToken = null;
             state.forgotPasswordResponse = null;
             state.forgotPasswordLoading = false;
             state.forgotPasswordError = null;
@@ -51,12 +48,11 @@ const authSlice = createSlice({
             })
             .addCase(
                 loginUser.fulfilled,
-                (state, action: PayloadAction<UserDataResponse | null>) => {
+                (state, action: PayloadAction<LoginResponse | null>) => {
                     if (action.payload) {
-                        state.authenticatedUser = action.payload;
+                        state.authenticatedUser = action.payload.user;
                         state.isAuthenticated = true;
                         state.authToken = action.payload.token;
-                        state.refreshToken = action.payload.refreshToken;
                         state.isLoading = false;
                         state.error = null;
                     }
