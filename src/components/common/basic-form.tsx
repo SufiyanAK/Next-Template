@@ -1,27 +1,26 @@
 'use client';
 
+import { BaseFormFieldsProps } from '@/screens/new-project-screen';
 import { colors } from '@/utils/customStyles';
-import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core'
+import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core';
 import { ArrowRight } from 'lucide-react';
-import { FC } from 'react'
+import { FC } from 'react';
 
 interface BasicFormComponentProps {
-    processName: string;
-    description: string;
-    setProcessName: (name: string) => void;
-    setDescription: (desc: string) => void;
     handleNext?: () => void;
     handleCancel?: () => void;
+    baseFormFields: BaseFormFieldsProps;
+    baseFormFieldsError: { processName: string, description: string }
+    setBaseFormFields: (field: keyof BaseFormFieldsProps, value: string | number) => void;
 }
 
 
 const BasicFormComponent: FC<BasicFormComponentProps> = ({
     handleNext,
     handleCancel,
-    processName,
-    description,
-    setProcessName,
-    setDescription
+    baseFormFields,
+    baseFormFieldsError,
+    setBaseFormFields
 }) => {
 
     return (
@@ -32,9 +31,10 @@ const BasicFormComponent: FC<BasicFormComponentProps> = ({
                     label="Process Name"
                     required
                     placeholder="Enter process name"
-                    value={processName}
+                    value={baseFormFields.processName}
+                    error={baseFormFieldsError.processName}
                     radius={6}
-                    onChange={(event) => setProcessName(event.currentTarget.value)}
+                    onChange={(event) => setBaseFormFields('processName', event.currentTarget.value)}
                     size="md"
                     styles={{
                         label: {
@@ -57,9 +57,10 @@ const BasicFormComponent: FC<BasicFormComponentProps> = ({
                     label="Description"
                     required
                     placeholder="Enter Description"
-                    value={description}
+                    value={baseFormFields.description}
+                    error={baseFormFieldsError.description}
                     radius={6}
-                    onChange={(event) => setDescription(event.currentTarget.value)}
+                    onChange={(event) => setBaseFormFields('description', event.currentTarget.value)}
                     size="md"
                     styles={{
                         label: {

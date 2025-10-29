@@ -27,8 +27,8 @@ const TemplateFormComponent: FC<TemplateFormComponentProps> = ({
         },
         {
             id: 'existing',
-            title: 'Use Existing Project as Template',
-            description: 'Start with a copy of an existing project',
+            title: 'Use Existing Process as Template',
+            description: 'Start with a copy of an existing process',
             icon: <Copy size={24} color={colors.primary} />
         }
     ];

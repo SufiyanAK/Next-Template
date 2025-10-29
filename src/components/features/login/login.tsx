@@ -1,7 +1,6 @@
 'use client';
 
 import { loginUser } from '@/store/actions/auth.action';
-import { logoutUser } from '@/store/slices/auth-slice/auth.slice';
 import { RootState, useAppDispatch, useAppSelector } from '@/store/store';
 import customStyles, { colors } from '@/utils/customStyles';
 import {
@@ -10,6 +9,7 @@ import {
     Button,
     Checkbox,
     Group,
+    Image,
     Paper,
     PasswordInput,
     Stack,
@@ -17,6 +17,7 @@ import {
     TextInput,
     Title
 } from '@mantine/core';
+import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -24,7 +25,7 @@ import { toast } from 'sonner';
 const LoginComponent = () => {
     const router = useRouter();
 
-    const { authenticatedUser } = useAppSelector((state: RootState) => state.authState);
+    const { authenticatedUser, isLoading } = useAppSelector((state: RootState) => state.authState);
 
     console.log("authenticatedUser =>>>>> ", authenticatedUser);
 
@@ -68,32 +69,21 @@ const LoginComponent = () => {
                 <Stack gap="lg">
                     {/* Logo and branding */}
                     <Group gap="xs" align="center">
-                        <Box
-                            style={{
-                                width: 50,
-                                height: 50,
-                                backgroundColor: colors.primary,
-                                borderRadius: 8,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                fontSize: '18px'
-                            }}
-                            onClick={() => dispatch(logoutUser())}
-                        >
-                            RPA
+                        <Box>
+                            <Image
+                                component={NextImage}
+                                src="/images/qbotz-logo.png"
+                                alt="Logo"
+                                width={80}
+                                height={80}
+                            />
                         </Box>
-                        <Text size="xl" fw={600} c={colors.textPrimary}>
-                            Platform
-                        </Text>
                     </Group>
 
                     {/* Welcome text */}
                     <Stack gap="xs" mb={32}>
                         <Title order={2} size="h1" fw={700} c={colors.textPrimary}>
-                            Welcome back
+                            Welcome
                         </Title>
                         <Text size="sm" c={colors.textSecondary}>
                             Please sign in to your account to continue
@@ -136,13 +126,18 @@ const LoginComponent = () => {
 
                         <Group justify="space-between">
                             <Checkbox
+                                disabled
                                 label="Remember me"
                                 size="sm"
                                 styles={{
                                     label: { color: colors.secondary }
                                 }}
                             />
-                            <Anchor size="sm" c={colors.primary}>
+                            <Anchor
+                                style={{ cursor: 'not-allowed' }}
+                                size="sm"
+                                c={colors.primary}
+                            >
                                 Forgot password?
                             </Anchor>
                         </Group>
@@ -150,6 +145,8 @@ const LoginComponent = () => {
                         <Button
                             size="md"
                             fullWidth
+                            loading={isLoading}
+                            disabled={isLoading}
                             style={{
                                 backgroundColor: colors.primary,
                                 border: 'none',
@@ -158,14 +155,18 @@ const LoginComponent = () => {
                             }}
                             onClick={handleLogin}
                         >
-                            Sign In
+                            {isLoading ? 'Signing In...' : 'Sign In'}
                         </Button>
 
                         <Group justify="center" gap="xs">
                             <Text size="sm" c={colors.secondary}>
                                 Don&apos;t have an account?
                             </Text>
-                            <Anchor size="sm" c={colors.primary}>
+                            <Anchor
+                                style={{ cursor: 'not-allowed' }}
+                                size="sm"
+                                c={colors.primary}
+                            >
                                 Create new account
                             </Anchor>
                         </Group>

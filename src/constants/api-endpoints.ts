@@ -4,6 +4,10 @@ const API_ENDPOINTS = {
     login: process.env.NEXT_PUBLIC_LOGIN_ENDPOINT!,
     getAllAccounts: process.env.NEXT_PUBLIC_GET_ALL_ACCOUNTS_ENDPOINT!,
     getEmailsByAccountId: process.env.NEXT_PUBLIC_GET_EMAILS_BY_ACCOUNT_ID_ENDPOINT!,
+    auth: {
+        meta: process.env.NEXT_PUBLIC_AUTH_META_ENDPOINT!,
+        inviteUser: process.env.NEXT_PUBLIC_INVITE_USER_ENDPOINT!
+    }
 };
 
 export default API_ENDPOINTS;
