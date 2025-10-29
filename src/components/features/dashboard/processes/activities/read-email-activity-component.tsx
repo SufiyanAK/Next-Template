@@ -1,6 +1,11 @@
 'use client';
 
+import { getAccounts } from '@/store/actions/accounts.action';
+import { getMeta } from '@/store/actions/meta.action';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { initialReadEmailActivityStates, ReadEmailActivityStates } from '@/types/activities/read-email-activity.types';
 import { colors } from '@/utils/customStyles';
+import { getEmailFiltersSelect, getEmailFoldersSelect } from '@/utils/meta-helpers';
 import {
     Box,
     Button,
@@ -13,10 +18,9 @@ import {
     TextInput
 } from '@mantine/core';
 import {
-    Mail,
-    Plus
+    Mail
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ReadEmailActivityComponentProps {
     opened: boolean;
@@ -24,20 +28,12 @@ interface ReadEmailActivityComponentProps {
 }
 
 const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityComponentProps) => {
-    const [receiverAddress, setReceiverAddress] = useState('');
-    const [emailFolder, setEmailFolder] = useState('Inbox');
-    const [filterSubject, setFilterSubject] = useState('');
-    const [filterCondition, setFilterCondition] = useState('Contains');
-    const [filterValue, setFilterValue] = useState('');
+    const { accountsList } = useAppSelector((state) => state.accountsState)
+    const { items } = useAppSelector((state) => state.metaState)
 
-    const folderOptions = [
-        'Inbox',
-        // 'Sent Items',
-        // 'Drafts',
-        // 'Deleted Items',
-        // 'Junk Email',
-        // 'Outbox'
-    ];
+    const dispatch = useAppDispatch();
+
+    const [readEmailActivityStates, setReadEmailActivityStates] = useState<ReadEmailActivityStates>(initialReadEmailActivityStates);
 
     const conditionOptions = [
         'Contains',
@@ -47,10 +43,22 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
         'Does not contain'
     ];
 
-    const subjectOptions = [
-        'Subject',
-        'From',
-    ];
+    // * Functions: Read Email Activity States
+    const updateReadEmailActivityState = (key: keyof ReadEmailActivityStates, value: string) => {
+        setReadEmailActivityStates((prevState) => ({
+            ...prevState,
+            [key]: value
+        }));
+    }
+
+    // * Functions: Meta Options
+    const folderOptions = getEmailFoldersSelect(items || []);
+    const filterOptions = getEmailFiltersSelect(items || []);
+
+    useEffect(() => {
+        dispatch(getAccounts())
+        dispatch(getMeta())
+    }, [dispatch])
 
     return (
         <Modal
@@ -120,18 +128,14 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                             <Text fw={500} size="sm" c={colors.textPrimary}>
                                 Receiver&apos;s Address
                             </Text>
-                            <TextInput
+                            <Select
+                                data={accountsList?.map((account) => account.user.email)}
                                 placeholder="Email address to read from"
-                                value={receiverAddress}
-                                onChange={(event) => setReceiverAddress(event.currentTarget.value)}
+                                onChange={(value) => updateReadEmailActivityState('receiverAddress', value || '')}
                                 size="sm"
                                 styles={{
-                                    input: {
-                                        borderColor: colors.light,
-                                        fontSize: '14px',
-                                        '&:focus': {
-                                            borderColor: colors.primary
-                                        }
+                                    dropdown: {
+                                        border: `1px solid ${colors.light}`,
                                     }
                                 }}
                             />
@@ -144,16 +148,14 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                             </Text>
                             <Select
                                 data={folderOptions}
-                                value={emailFolder}
-                                onChange={(value) => setEmailFolder(value || 'Inbox')}
+                                value={readEmailActivityStates.emailFolder}
+                                placeholder='Select Option'
+                                onChange={(value) => updateReadEmailActivityState('emailFolder', value || 'Inbox')}
                                 size="sm"
                                 styles={{
                                     input: {
                                         borderColor: colors.light,
                                         fontSize: '14px',
-                                        '&:focus': {
-                                            borderColor: colors.primary
-                                        }
                                     }
                                 }}
                             />
@@ -165,35 +167,32 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                                 <Text fw={500} size="sm" c={colors.textPrimary}>
                                     Additional Filters
                                 </Text>
-                                <Button
-                                    variant="subtle"
-                                    size="xs"
-                                    leftSection={<Plus size={14} />}
-                                    c={colors.primary}
-                                    style={{
-                                        fontSize: '12px'
-                                    }}
-                                >
-                                    Add Filter
-                                </Button>
+                                {/* <Button
+                                        variant="subtle"
+                                        size="xs"
+                                        leftSection={<Plus size={14} />}
+                                        c={colors.primary}
+                                        style={{
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        Add Filter
+                                    </Button> */}
                             </Group>
 
                             {/* Filter Row */}
                             <Group gap={8} align="end">
                                 <Box style={{ flex: '0 0 120px' }}>
                                     <Select
-                                        data={subjectOptions}
-                                        value={filterSubject}
-                                        onChange={(value) => setFilterSubject(value || '')}
+                                        data={filterOptions}
+                                        value={readEmailActivityStates.filterSubject}
+                                        onChange={(value) => updateReadEmailActivityState('filterSubject', value || '')}
                                         placeholder="Subject"
                                         size="sm"
                                         styles={{
                                             input: {
                                                 borderColor: colors.light,
                                                 fontSize: '13px',
-                                                '&:focus': {
-                                                    borderColor: colors.primary
-                                                }
                                             }
                                         }}
                                     />
@@ -202,17 +201,14 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                                 <Box style={{ flex: '0 0 120px' }}>
                                     <Select
                                         data={conditionOptions}
-                                        value={filterCondition}
-                                        onChange={(value) => setFilterCondition(value || 'Contains')}
+                                        value={readEmailActivityStates.filterCondition}
+                                        onChange={(value) => updateReadEmailActivityState('filterCondition', value || 'Contains')}
                                         placeholder="Contains"
                                         size="sm"
                                         styles={{
                                             input: {
                                                 borderColor: colors.light,
                                                 fontSize: '13px',
-                                                '&:focus': {
-                                                    borderColor: colors.primary
-                                                }
                                             }
                                         }}
                                     />
@@ -221,16 +217,13 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                                 <Box style={{ flex: 1 }}>
                                     <TextInput
                                         placeholder="Value"
-                                        value={filterValue}
-                                        onChange={(event) => setFilterValue(event.currentTarget.value)}
+                                        value={readEmailActivityStates.filterValue}
+                                        onChange={(event) => updateReadEmailActivityState('filterValue', event.currentTarget.value)}
                                         size="sm"
                                         styles={{
                                             input: {
                                                 borderColor: colors.light,
                                                 fontSize: '13px',
-                                                '&:focus': {
-                                                    borderColor: colors.primary
-                                                }
                                             }
                                         }}
                                     />
