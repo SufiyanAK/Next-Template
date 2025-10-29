@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use(
         // Get token from localStorage (client-side) or cookies (server-side)
 
         // Server-side: use cookies
-        const token = getCookie('RPAAuthToken') as string | undefined;
+        const token = getCookie('QBotzAuthToken') as string | undefined;
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
