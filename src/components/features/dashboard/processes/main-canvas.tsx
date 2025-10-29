@@ -14,16 +14,17 @@ import {
     BackgroundVariant
 } from '@xyflow/react';
 import { useCallback, useMemo } from 'react';
-import ActivityNode from './activity-node';
+import ActivityNode from '../activity-node';
 import { Plus } from 'lucide-react';
 
 import '@xyflow/react/dist/style.css';
 
 interface MainCanvasComponentProps {
     onActivityConfig?: (nodeId: string, activityType: string) => void;
+    onNodeSelect?: (node: { id: string; type: string; label: string; data: any } | null) => void;
 }
 
-const MainCanvasComponent = ({ onActivityConfig }: MainCanvasComponentProps) => {
+const MainCanvasComponent = ({ onActivityConfig, onNodeSelect }: MainCanvasComponentProps) => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -49,6 +50,15 @@ const MainCanvasComponent = ({ onActivityConfig }: MainCanvasComponentProps) => 
         setEdges((edges: any) => edges.filter((edge: any) => edge.source !== nodeId && edge.target !== nodeId));
     }, [setNodes, setEdges]);
 
+    const onNodeClick = useCallback((_: any, node: any) => {
+        onNodeSelect?.({
+            id: node.id,
+            type: node.type,
+            label: node.data.label,
+            data: node.data
+        });
+    }, [onNodeSelect]);
+
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -60,9 +70,6 @@ const MainCanvasComponent = ({ onActivityConfig }: MainCanvasComponentProps) => 
 
             const type = event.dataTransfer.getData('application/reactflow');
             const activityData = JSON.parse(event.dataTransfer.getData('application/activity'));
-
-            console.log("Activity Data => ", activityData);
-            console.log("Type => ", type);
 
             if (typeof type === 'undefined' || !type) {
                 return;
@@ -136,6 +143,7 @@ const MainCanvasComponent = ({ onActivityConfig }: MainCanvasComponentProps) => 
                     onConnect={onConnect}
                     onDragOver={onDragOver}
                     onDrop={onDrop}
+                    onNodeClick={onNodeClick}
                     nodeTypes={nodeTypes}
                     fitView
                     style={{

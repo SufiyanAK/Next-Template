@@ -18,7 +18,7 @@ import {
     Filter,
     ChevronDown,
     Mail,
-    FileText
+    Workflow
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -36,12 +36,16 @@ interface ActivityItem {
     description: string;
 }
 
-interface DashboardLeftSidebarComponentProps {
-    onReadEmailClick?: () => void;
-}
+// interface DashboardLeftSidebarComponentProps {
+//     onReadEmailClick?: () => void;
+//     onEmailToClick?: () => void;
+//     onAssignEmailClick?: () => void;
+//     onERPConfigClick?: () => void;
+// }
 
-const DashboardLeftSidebarComponent = ({ onReadEmailClick }: DashboardLeftSidebarComponentProps) => {
+const DashboardLeftSidebarComponent = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [categoriesExpanded, setCategoriesExpanded] = useState<{ [key: string]: boolean }>({});
     const [categories, setCategories] = useState<ActivityCategory[]>([
         {
             id: 'email',
@@ -53,19 +57,34 @@ const DashboardLeftSidebarComponent = ({ onReadEmailClick }: DashboardLeftSideba
                     id: 'read-email',
                     name: 'Read Email',
                     description: 'Read emails from an inbox'
-                }
+                },
+                {
+                    id: 'assign',
+                    name: 'Assignment',
+                    description: 'Variable Assignment'
+                },
+                {
+                    id: 'reply-email',
+                    name: 'Response',
+                    description: 'Reply to email'
+                },
+                // {
+                //     id: 'email-to',
+                //     name: 'Email To',
+                //     description: 'Send an email message'
+                // },
             ]
         },
         {
-            id: 'files',
-            name: 'Files',
-            icon: FileText,
+            id: 'ERP',
+            name: 'Connection',
+            icon: Workflow,
             expanded: false,
             items: [
                 {
-                    id: 'read-file',
-                    name: 'Read File',
-                    description: 'Read content from files'
+                    id: 'erp-config',
+                    name: 'ERP Configuration',
+                    description: 'Http API connection'
                 }
             ]
         }
@@ -186,11 +205,6 @@ const DashboardLeftSidebarComponent = ({ onReadEmailClick }: DashboardLeftSideba
                                     {category.items.map((item) => (
                                         <UnstyledButton
                                             key={item.id}
-                                            onClick={() => {
-                                                if (item.id === 'read-email' && onReadEmailClick) {
-                                                    onReadEmailClick();
-                                                }
-                                            }}
                                             onDragStart={(event) => {
                                                 event.dataTransfer.setData('application/reactflow', item.id);
                                                 event.dataTransfer.setData('application/activity', JSON.stringify(item));
@@ -228,24 +242,6 @@ const DashboardLeftSidebarComponent = ({ onReadEmailClick }: DashboardLeftSideba
                     ))}
                 </Stack>
             </ScrollArea>
-
-            {/* Recently Used Section */}
-            {/* <Box px={16} py={12} style={{ borderTop: `1px solid ${colors.tertiary}` }}>
-                    <Text size="xs" fw={500} c={colors.textSecondary} mb={8}>
-                        RECENTLY USED
-                    </Text>
-                    <Stack gap={4}>
-                        <Group gap={8}>
-                            <Mail size={12} color={colors.textSecondary} />
-                            <Text size="xs" c={colors.textSecondary}>Send Email</Text>
-                        </Group>
-                        <Group gap={8}>
-                            <FileText size={12} color={colors.textSecondary} />
-                            <Text size="xs" c={colors.textSecondary}>Read File</Text>
-                        </Group>
-                    </Stack>
-                </Box> */}
-
         </Box>
     );
 };

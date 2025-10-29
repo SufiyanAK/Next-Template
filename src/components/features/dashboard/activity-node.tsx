@@ -3,7 +3,7 @@
 import { colors } from '@/utils/customStyles';
 import { Box, Group, Text, ActionIcon } from '@mantine/core';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { Mail, Settings, X } from 'lucide-react';
+import { Code, Mail, Settings, StretchHorizontal, X } from 'lucide-react';
 
 export interface ActivityNodeData extends Record<string, unknown> {
     label: string;
@@ -17,9 +17,16 @@ export interface ActivityNodeData extends Record<string, unknown> {
 const ActivityNode = (props: NodeProps) => {
     const { data, selected } = props;
     const nodeData = data as ActivityNodeData;
+
     const getActivityIcon = (type: string) => {
         switch (type) {
             case 'read-email':
+                return Mail;
+            case 'assign':
+                return Code
+            case 'erp-config':
+                return StretchHorizontal;
+            case 'reply-email':
                 return Mail;
             default:
                 return Mail;
@@ -100,6 +107,7 @@ const ActivityNode = (props: NodeProps) => {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 nodeData.onConfigClick?.();
+                                console.log("Node Data =>>>>>>>>> ", nodeData)
                             }}
                         >
                             <Settings size={12} />
