@@ -1,14 +1,17 @@
-import DashboardComponent from '@/screens/dashboard-screen'
+'use client';
 
-export const metadata = {
-    title: 'RPA | Dashboard',
-    description: 'Dashboard page for RPA application',
-}
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const DashboardScreen = () => {
-    return (
-        <DashboardComponent />
-    )
-}
+    const router = useRouter();
 
-export default DashboardScreen
+    useEffect(() => {
+        // Redirect to accounts by default
+        router.replace('/dashboard/accounts');
+    }, [router]);
+
+    return null; // This component just redirects
+};
+
+export default DashboardScreen;
