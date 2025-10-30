@@ -9,55 +9,66 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const errors = {
-    processName: 'Process name is required',
-    description: 'Description is required',
-    bothRequired: 'Process name and description are required'
+export interface BaseFormFieldsProps {
+    processName: string;
+    description: string;
+    activeStep: number;
+}
+
+const initialBaseFormFields: BaseFormFieldsProps = {
+    processName: '',
+    description: '',
+    activeStep: 0
 }
 
 const NewProjectComponent = () => {
     const router = useRouter();
 
-    const [processName, setProcessName] = useState('');
-    const [description, setDescription] = useState('');
-    const [activeStep, setActiveStep] = useState(0);
+    const [baseFormFields, setBaseFormFields] = useState<BaseFormFieldsProps>(initialBaseFormFields)
+    const [baseFormErrors, setBaseFormErrors] = useState<{ processName?: string; description?: string }>({})
 
     const handleStepChange = (step: number) => {
-        setActiveStep(step);
+        setBaseFormFields({ ...baseFormFields, activeStep: step })
+    }
+
+    const handleBaseFormFieldChange = (field: keyof BaseFormFieldsProps, value: string | number) => {
+        setBaseFormFields({ ...baseFormFields, [field]: value });
+
+        if (field === 'processName' && baseFormErrors.processName) {
+            setBaseFormErrors((prev) => ({ ...prev, processName: undefined }));
+        }
+
+        if (field === 'description' && baseFormErrors.description) {
+            setBaseFormErrors((prev) => ({ ...prev, description: undefined }));
+        }
     }
 
     const handleNext = () => {
-        if (!processName && !description) {
-            toast.error(errors['bothRequired']);
+        if (!baseFormFields.processName && !baseFormFields.description) {
+            setBaseFormErrors({ processName: 'Process name is required', description: 'Description is required' });
             return;
         }
 
-        if (!processName) {
-            toast.error(errors['processName']);
+        if (!baseFormFields.processName) {
+            setBaseFormErrors((prev) => ({ ...prev, processName: 'Process name is required' }));
             return;
         }
 
-        if (!description) {
-            toast.error(errors['description']);
+        if (!baseFormFields.description) {
+            setBaseFormErrors((prev) => ({ ...prev, description: 'Description is required' }));
             return;
         }
 
-        setActiveStep((prev) => prev === 0 ? 1 : prev);
-        console.log('Next Step: ', activeStep);
-        console.log('Process Name:', processName);
-        console.log('Description:', description);
+        setBaseFormFields((prev) => ({ ...prev, activeStep: 1 }));
     }
 
     const handleBack = () => {
-        setActiveStep((prev) => prev === 1 ? 0 : prev);
-        console.log('Back Step: ', activeStep);
+        setBaseFormFields((prev) => ({ ...prev, activeStep: 0 }));
     }
 
     const handleCancel = () => {
         router.push('/home');
-        setActiveStep(0);
-        setProcessName('');
-        setDescription('');
+        setBaseFormFields(initialBaseFormFields);
     }
 
     return (
@@ -72,19 +83,18 @@ const NewProjectComponent = () => {
                 />
 
                 {/* Stepper - component */}
-                <StepperComponent currentStep={activeStep} handleStepChange={handleStepChange} />
+                <StepperComponent currentStep={baseFormFields.activeStep} handleStepChange={handleStepChange} />
 
                 {/* Form - Components */}
                 {/* Basic Form - Component */}
                 {
-                    activeStep === 0 ? (
+                    baseFormFields.activeStep === 0 ? (
                         <BasicFormComponent
-                            processName={processName}
-                            description={description}
-                            setProcessName={setProcessName}
-                            setDescription={setDescription}
                             handleNext={handleNext}
                             handleCancel={handleCancel}
+                            baseFormFields={baseFormFields}
+                            setBaseFormFields={handleBaseFormFieldChange}
+                            baseFormFieldsError={baseFormErrors as { processName: string, description: string }}
                         />
                     ) : (
                         <TemplateFormComponent
@@ -92,7 +102,7 @@ const NewProjectComponent = () => {
                             handleBack={handleBack}
                             handleNext={() => {
                                 router.push('/dashboard');
-                                toast.success('Project Created Successfully!')
+                                toast.success('Process Created Successfully!')
                             }}
                         />
                     )

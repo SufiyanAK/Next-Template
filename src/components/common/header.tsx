@@ -3,10 +3,11 @@
 import { logoutUser } from "@/store/slices/auth-slice/auth.slice";
 import { useAppDispatch } from "@/store/store";
 import { colors } from "@/utils/customStyles";
-import { ActionIcon, Anchor, Group, Menu, Text } from "@mantine/core";
-import { Bell, ChevronDown, HelpCircle, LogOut, Settings, User, UserCircle } from "lucide-react";
+import { ActionIcon, Anchor, Group, Image, Menu, Text } from "@mantine/core";
+import { Bell, ChevronDown, HelpCircle, LogOut, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";
+import NextImage from "next/image";
 
 const HeaderComponent = () => {
     const dispatch = useAppDispatch()
@@ -17,8 +18,8 @@ const HeaderComponent = () => {
         dispatch(logoutUser());
 
         // Clear local storage and cookies
-        localStorage.removeItem('RPAAuthToken');
-        deleteCookie('RPAAuthToken');
+        localStorage.removeItem('QBotzAuthToken');
+        deleteCookie('QBotzAuthToken');
 
         // Redirect to login page
         router.push('/login');
@@ -32,28 +33,19 @@ const HeaderComponent = () => {
                     href="/home"
                     underline="never"
                     style={{
-                        width: 36,
-                        height: 36,
+                        padding: '12px 8px',
                         backgroundColor: colors.white,
-                        color: colors.primary,
                         borderRadius: 6,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold',
-                        fontSize: '14px'
                     }}
                 >
-                    RPA
+                    <Image
+                        component={NextImage}
+                        src="/images/qbotz-logo.png"
+                        alt="Logo"
+                        width={50}
+                        height={50}
+                    />
                 </Anchor>
-                <Text
-                    size="lg"
-                    fw={600}
-                    c={colors.white}
-                    style={{ fontSize: '18px' }}
-                >
-                    QBotz.io
-                </Text>
             </Group>
 
             {/* Right Section - Action Icons and User Profile */}
@@ -120,7 +112,7 @@ const HeaderComponent = () => {
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                        <Menu.Item
+                        {/* <Menu.Item
                             leftSection={<UserCircle size={16} />}
                             onClick={() => {
                                 // Handle profile click
@@ -138,7 +130,7 @@ const HeaderComponent = () => {
                         >
                             Account Settings
                         </Menu.Item>
-                        <Menu.Divider />
+                        <Menu.Divider /> */}
                         <Menu.Item
                             color="red"
                             leftSection={<LogOut size={16} />}

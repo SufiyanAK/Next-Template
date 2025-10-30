@@ -28,7 +28,7 @@ const HomeComponent = () => {
     return (
         <Box
             style={{
-                minHeight: 'calc(100vh - 66px)',
+                minHeight: 'calc(100vh - 70px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -61,7 +61,7 @@ const HomeComponent = () => {
                         <CreateProjectCardComponent
                             hasIcon={true}
                             Icon={<Plus size={20} color={colors.primary} />}
-                            title="Create New Project"
+                            title="Create New Process"
                             description="Start building a new automation workflow from scratch"
                             onClickPath="/projects/new"
                         />
@@ -69,8 +69,8 @@ const HomeComponent = () => {
                             hasIcon={true}
                             Icon={<Folder size={20} color={colors.secondary} />}
                             color={colors.secondary}
-                            title="Open Recent Project"
-                            description="Continue working on an existing automation project"
+                            title="Open Recent Process"
+                            description="Continue working on an existing automation process"
                             onClickPath="/projects/recent"
                         />
                     </Group>
@@ -85,7 +85,7 @@ const HomeComponent = () => {
                             style={{ borderRadius: '8px 8px 0 0' }}
                         >
                             <Text c={colors.white} size="lg">
-                                Recent Projects
+                                Recent Processes
                             </Text>
                         </Box>
 
