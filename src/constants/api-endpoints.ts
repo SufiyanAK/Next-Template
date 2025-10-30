@@ -7,6 +7,14 @@ const API_ENDPOINTS = {
     auth: {
         meta: process.env.NEXT_PUBLIC_AUTH_META_ENDPOINT!,
         inviteUser: process.env.NEXT_PUBLIC_INVITE_USER_ENDPOINT!
+    },
+    process: {
+        getRecent: process.env.NEXT_PUBLIC_GET_RECENT_PROCESSES_ENDPOINT!,
+        getById: process.env.NEXT_PUBLIC_GET_PROCESS_BY_ID_ENDPOINT!,
+        create: process.env.NEXT_PUBLIC_CREATE_PROCESS_ENDPOINT!,
+        update: process.env.NEXT_PUBLIC_UPDATE_PROCESS_BY_ID_ENDPOINT!,
+        run: process.env.NEXT_PUBLIC_RUN_PROCESS_BY_ID_ENDPOINT!,
+        stop: process.env.NEXT_PUBLIC_STOP_PROCESS_BY_ID_ENDPOINT!,
     }
 };
 

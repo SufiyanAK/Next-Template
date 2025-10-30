@@ -1,7 +1,6 @@
 'use client';
 
 import { getAccounts } from '@/store/actions/accounts.action';
-import { getMeta } from '@/store/actions/meta.action';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { initialReadEmailActivityStates, ReadEmailActivityStates } from '@/types/activities/read-email-activity.types';
 import { colors } from '@/utils/customStyles';
@@ -57,7 +56,6 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
 
     useEffect(() => {
         dispatch(getAccounts())
-        dispatch(getMeta())
     }, [dispatch])
 
     return (
