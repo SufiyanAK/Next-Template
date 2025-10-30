@@ -226,7 +226,7 @@ const EmailSidebar = ({
                                                 <Group gap={4}>
                                                     <Paperclip size={12} color={colors.textSecondary} />
                                                     <Text size="xs" c={colors.textSecondary}>
-                                                        {email.Attachments.length}
+                                                        {email.attachments.length}
                                                     </Text>
                                                 </Group>
                                             )}
@@ -241,9 +241,9 @@ const EmailSidebar = ({
                                         <Badge
                                             variant="dot"
                                             color={
-                                                email.SAPResponse?.status === 'SUCCESS'
+                                                email.sapResponse?.status === 'SUCCESS'
                                                     ? 'green'
-                                                    : email.SAPResponse?.status === 'FAILED'
+                                                    : email.sapResponse?.status === 'FAILED'
                                                         ? 'red'
                                                         : email.hasAttachments
                                                             ? colors.primary
@@ -251,9 +251,9 @@ const EmailSidebar = ({
                                             }
                                             size="xs"
                                         >
-                                            {email.SAPResponse?.status === 'SUCCESS'
+                                            {email.sapResponse?.status === 'SUCCESS'
                                                 ? 'Success'
-                                                : email.SAPResponse?.status === 'FAILED'
+                                                : email.sapResponse?.status === 'FAILED'
                                                     ? 'Failed'
                                                     : email.hasAttachments
                                                         ? 'Attachment'

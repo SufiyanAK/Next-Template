@@ -5,7 +5,7 @@ import {
     LoginData,
     LoginResponse
 } from "@/types/auth.types";
-import { apiGet, apiPost } from "@/utils/api-requests";
+import { apiPost } from "@/utils/api-requests";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { setCookie } from "cookies-next";

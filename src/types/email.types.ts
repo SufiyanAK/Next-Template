@@ -44,8 +44,8 @@ export interface Email {
     hasAttachments: boolean;
     processedAt: string;
     createdAt: string;
-    Attachments: EmailAttachment[];
-    SAPResponse?: {
+    attachments: EmailAttachment[];
+    sapResponse?: {
         id: number;
         status: 'SUCCESS' | 'FAILED';
         responseData: any;
