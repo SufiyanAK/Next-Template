@@ -45,7 +45,7 @@ interface ActivityItem {
 
 const DashboardLeftSidebarComponent = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [categoriesExpanded, setCategoriesExpanded] = useState<{ [key: string]: boolean }>({});
+    // const [categoriesExpanded, setCategoriesExpanded] = useState<{ [key: string]: boolean }>({});
     const [categories, setCategories] = useState<ActivityCategory[]>([
         {
             id: 'email',

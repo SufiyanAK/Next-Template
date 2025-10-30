@@ -168,7 +168,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                         </Paper>
 
                         {/* Attachments Section */}
-                        {selectedEmail.hasAttachments && selectedEmail.Attachments.length > 0 && (
+                        {selectedEmail.hasAttachments && selectedEmail.attachments.length > 0 && (
                             <Paper
                                 p={24}
                                 radius={12}
@@ -185,13 +185,13 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                 Attachments
                                             </Text>
                                             <Badge variant="light" color={colors.primary} radius="xl">
-                                                {selectedEmail.Attachments.length}
+                                                {selectedEmail.attachments.length}
                                             </Badge>
                                         </Group>
                                     </Group>
 
                                     <Stack gap={16}>
-                                        {selectedEmail.Attachments.map((attachment) => (
+                                        {selectedEmail.attachments.map((attachment) => (
                                             <Card
                                                 key={attachment.id}
                                                 p={16}
@@ -417,7 +417,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                         )}
 
                         {/* SAP Response Status Section */}
-                        {selectedEmail.SAPResponse && (
+                        {selectedEmail.sapResponse && (
                             <Paper
                                 p={24}
                                 radius={12}
@@ -436,15 +436,15 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                         </Group>
                                         <Badge
                                             variant="filled"
-                                            color={selectedEmail.SAPResponse.status === 'SUCCESS' ? 'green' : 'red'}
+                                            color={selectedEmail.sapResponse.status === 'SUCCESS' ? 'green' : 'red'}
                                             size="md"
                                             radius="xl"
                                         >
-                                            {selectedEmail.SAPResponse.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED'}
+                                            {selectedEmail.sapResponse.status === 'SUCCESS' ? 'SUCCESS' : 'FAILED'}
                                         </Badge>
                                     </Group>
 
-                                    {selectedEmail.SAPResponse.status === 'SUCCESS' ? (
+                                    {selectedEmail.sapResponse.status === 'SUCCESS' ? (
                                         <Paper
                                             p={16}
                                             radius={8}
@@ -462,7 +462,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                         </Text>
                                                         <Group gap={8}>
                                                             <Text size="xs" c={colors.textSecondary}>
-                                                                PO Number: {selectedEmail.SAPResponse.responseData?.d?.PurchaseOrder || 'N/A'}
+                                                                PO Number: {selectedEmail.sapResponse.responseData?.d?.PurchaseOrder || 'N/A'}
                                                             </Text>
                                                             <Group gap={4}>
                                                                 <Clock size={12} color={colors.textSecondary} />
@@ -478,7 +478,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                 </Group>
 
                                                 {/* Success Details */}
-                                                {selectedEmail.SAPResponse.responseData?.d && (
+                                                {selectedEmail.sapResponse.responseData?.d && (
                                                     <Stack gap={12} mt={8}>
                                                         <Text size="sm" fw={500} c={colors.textPrimary}>
                                                             Purchase Order Details
@@ -487,25 +487,25 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                             <Group gap={6}>
                                                                 <Text size="xs" c={colors.textSecondary}>PO Number:</Text>
                                                                 <Text size="xs" fw={500} c={colors.textPrimary}>
-                                                                    {selectedEmail.SAPResponse.responseData.d.PurchaseOrder}
+                                                                    {selectedEmail.sapResponse.responseData.d.PurchaseOrder}
                                                                 </Text>
                                                             </Group>
                                                             <Group gap={6}>
                                                                 <Text size="xs" c={colors.textSecondary}>Company:</Text>
                                                                 <Text size="xs" fw={500} c={colors.textPrimary}>
-                                                                    {selectedEmail.SAPResponse.responseData.d.CompanyCode}
+                                                                    {selectedEmail.sapResponse.responseData.d.CompanyCode}
                                                                 </Text>
                                                             </Group>
                                                             <Group gap={6}>
                                                                 <Text size="xs" c={colors.textSecondary}>Supplier:</Text>
                                                                 <Text size="xs" fw={500} c={colors.textPrimary}>
-                                                                    {selectedEmail.SAPResponse.responseData.d.Supplier}
+                                                                    {selectedEmail.sapResponse.responseData.d.Supplier}
                                                                 </Text>
                                                             </Group>
                                                             <Group gap={6}>
                                                                 <Text size="xs" c={colors.textSecondary}>Currency:</Text>
                                                                 <Badge size="xs" variant="light" color={colors.primary}>
-                                                                    {selectedEmail.SAPResponse.responseData.d.DocumentCurrency}
+                                                                    {selectedEmail.sapResponse.responseData.d.DocumentCurrency}
                                                                 </Badge>
                                                             </Group>
                                                         </Group>
@@ -547,7 +547,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                 </Group>
 
                                                 {/* Error Details */}
-                                                {selectedEmail.SAPResponse.responseData?.error && (
+                                                {selectedEmail.sapResponse.responseData?.error && (
                                                     <Stack gap={12} mt={8}>
                                                         <Text size="sm" fw={500} c={colors.textPrimary}>
                                                             Error Details
@@ -557,12 +557,12 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                                 <Group gap={8}>
                                                                     <AlertCircle size={14} color="#ff6347" />
                                                                     <Text size="xs" fw={500} c="#ff6347">
-                                                                        {selectedEmail.SAPResponse.responseData.error.message?.value || 'Unknown error'}
+                                                                        {selectedEmail.sapResponse.responseData.error.message?.value || 'Unknown error'}
                                                                     </Text>
                                                                 </Group>
-                                                                {selectedEmail.SAPResponse.responseData.error.innererror?.errordetails && (
+                                                                {selectedEmail.sapResponse.responseData.error.innererror?.errordetails && (
                                                                     <Stack gap={4} ml={22}>
-                                                                        {selectedEmail.SAPResponse.responseData.error.innererror.errordetails.map((detail: any, index: number) => (
+                                                                        {selectedEmail.sapResponse.responseData.error.innererror.errordetails.map((detail: any, index: number) => (
                                                                             <Group key={index} gap={6}>
                                                                                 <Badge size="xs" color="red" variant="outline">
                                                                                     {detail.code}
@@ -586,7 +586,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                         )}
 
                         {/* Empty State for No Attachments */}
-                        {!selectedEmail.hasAttachments && !selectedEmail.SAPResponse && (
+                        {!selectedEmail.hasAttachments && !selectedEmail.sapResponse && (
                             <Paper
                                 p={32}
                                 radius={12}
@@ -613,7 +613,7 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                         )}
 
                         {/* Email Body Content for Text-Only Emails with SAP Response */}
-                        {!selectedEmail.hasAttachments && selectedEmail.SAPResponse && selectedEmail.body && (
+                        {!selectedEmail.hasAttachments && selectedEmail.sapResponse && selectedEmail.body && (
                             <Paper
                                 p={24}
                                 radius={12}
@@ -630,14 +630,14 @@ const EmailContent = ({ selectedEmail }: EmailContentProps) => {
                                                 Email Content
                                             </Text>
                                         </Group>
-                                        {selectedEmail.SAPResponse && (
+                                        {selectedEmail.sapResponse && (
                                             <Badge
                                                 variant="light"
-                                                color={selectedEmail.SAPResponse.status === 'SUCCESS' ? 'green' : 'red'}
+                                                color={selectedEmail.sapResponse.status === 'SUCCESS' ? 'green' : 'red'}
                                                 size="sm"
                                                 radius="xl"
                                             >
-                                                {selectedEmail.SAPResponse.status === 'SUCCESS' ? 'Success' : 'Failed'}
+                                                {selectedEmail.sapResponse.status === 'SUCCESS' ? 'Success' : 'Failed'}
                                             </Badge>
                                         )}
                                     </Group>

@@ -29,7 +29,7 @@ interface ReadEmailActivityComponentProps {
 
 const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityComponentProps) => {
     const { accountsList } = useAppSelector((state) => state.accountsState)
-    const { items } = useAppSelector((state) => state.metaState)
+    const { meta } = useAppSelector((state) => state.metaState);
 
     const dispatch = useAppDispatch();
 
@@ -52,8 +52,8 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
     }
 
     // * Functions: Meta Options
-    const folderOptions = getEmailFoldersSelect(items || []);
-    const filterOptions = getEmailFiltersSelect(items || []);
+    const folderOptions = getEmailFoldersSelect(meta.enums || []);
+    const filterOptions = getEmailFiltersSelect(meta.enums || []);
 
     useEffect(() => {
         dispatch(getAccounts())
