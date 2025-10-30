@@ -4,7 +4,7 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Get the auth token from cookies or localStorage (we'll check cookies here since it's server-side)
-    const token = request.cookies.get('RPAAuthToken')?.value ||
+    const token = request.cookies.get('QBotzAuthToken')?.value ||
         request.headers.get('authorization')?.replace('Bearer ', '');
 
     console.log('Middleware - Path:', pathname);
@@ -14,9 +14,25 @@ export function middleware(request: NextRequest) {
     const publicRoutes = ['/login'];
     const protectedRoutes = ['/dashboard', '/home', '/projects'];
 
+    // Check if current path is root
+    const isRoot = pathname === '/';
+
     // Check if current path is a protected route
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+    // Handle root path
+    if (isRoot) {
+        if (token) {
+            // If authenticated, redirect to home
+            console.log('Middleware - Redirecting root to home (authenticated)');
+            return NextResponse.redirect(new URL('/home', request.url));
+        } else {
+            // If not authenticated, redirect to login
+            console.log('Middleware - Redirecting root to login (not authenticated)');
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+    }
 
     // If user is not authenticated
     if (!token) {

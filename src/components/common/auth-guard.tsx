@@ -21,10 +21,11 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+    const isRootRoute = pathname === '/';
 
     useEffect(() => {
         // Check localStorage for token if Redux doesn't have it
-        const localToken = typeof window !== 'undefined' ? localStorage.getItem('RPAAuthToken') : null;
+        const localToken = typeof window !== 'undefined' ? localStorage.getItem('QBotzAuthToken') : null;
         const hasValidToken = authToken || localToken;
 
         console.log('AuthGuard - Path:', pathname);
@@ -32,6 +33,19 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
         console.log('AuthGuard - Has Token:', !!hasValidToken);
         console.log('AuthGuard - Is Protected Route:', isProtectedRoute);
         console.log('AuthGuard - Is Public Route:', isPublicRoute);
+        console.log('AuthGuard - Is Root Route:', isRootRoute);
+
+        // Handle root path redirection
+        if (isRootRoute) {
+            if (hasValidToken) {
+                console.log('AuthGuard - Redirecting root to home (authenticated)');
+                router.replace('/home');
+            } else {
+                console.log('AuthGuard - Redirecting root to login (not authenticated)');
+                router.replace('/login');
+            }
+            return;
+        }
 
         // If user is not authenticated and trying to access protected route
         if (!hasValidToken && isProtectedRoute) {
@@ -47,11 +61,30 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
             return;
         }
 
-    }, [authToken, isAuthenticated, pathname, router, isProtectedRoute, isPublicRoute]);
+    }, [authToken, isAuthenticated, pathname, router, isProtectedRoute, isPublicRoute, isRootRoute]);
 
     // Show loading if we're checking authentication
-    const localToken = typeof window !== 'undefined' ? localStorage.getItem('RPAAuthToken') : null;
+    const localToken = typeof window !== 'undefined' ? localStorage.getItem('QBotzAuthToken') : null;
     const hasValidToken = authToken || localToken;
+
+    // Show loading while handling redirects
+    if (isRootRoute) {
+        return (
+            <Box style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh'
+            }}>
+                <Stack align="center" gap={16}>
+                    <Loader size="md" color={colors.primary} />
+                    <Text size="sm" c={colors.textSecondary}>
+                        Loading...
+                    </Text>
+                </Stack>
+            </Box>
+        );
+    }
 
     // If no token and trying to access protected route, show loading while redirecting
     if (!hasValidToken && isProtectedRoute) {

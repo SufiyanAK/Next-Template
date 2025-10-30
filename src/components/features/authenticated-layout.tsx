@@ -18,7 +18,7 @@ const AuthenticatedLayout: FC<AuthenticatedLayoutProps> = ({ children }) => {
             </Box>
             <Box style={{
                 flex: 1,
-                minHeight: 'calc(100vh - 66px)'
+                minHeight: 'calc(100vh - 70px)'
             }}>
                 {children}
             </Box>
