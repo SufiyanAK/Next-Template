@@ -5,7 +5,7 @@ import {
     LoginData,
     LoginResponse
 } from "@/types/auth.types";
-import { apiPost } from "@/utils/api-requests";
+import { apiGet, apiPost } from "@/utils/api-requests";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { setCookie } from "cookies-next";
@@ -44,10 +44,10 @@ export const loginUser = createAsyncThunk<LoginResponse | null, LoginUserParams>
             if (result.token && result.user) {
                 // Store token in localStorage for axios interceptor
                 if (typeof window !== 'undefined') {
-                    localStorage.setItem('RPAAuthToken', result.token);
-                    
+                    localStorage.setItem('QBotzAuthToken', result.token);
+
                     // Also set cookie for server-side middleware access
-                    setCookie('RPAAuthToken', result.token);
+                    setCookie('QBotzAuthToken', result.token);
                 }
 
                 // Call success handler if provided
@@ -90,7 +90,6 @@ export const loginUser = createAsyncThunk<LoginResponse | null, LoginUserParams>
         }
     }
 );
-
 
 // Thunk to handle forget password
 export const forgetPassword = createAsyncThunk<

@@ -10,11 +10,3 @@ export interface Account {
     updatedAt: string;
     user: User;
 }
-
-export interface GetAllAccountsResponse {
-    data: Account[];
-}
-
-export interface GetEmailsByAccountIdResponse {
-    data: any[]; // You can define the email structure based on your actual response
-}
