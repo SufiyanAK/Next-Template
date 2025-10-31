@@ -16,6 +16,15 @@ export interface ProcessCreationStates {
     processCategoryId: string;
 }
 
+// * Initial state for Process Creation Response
+export interface ProcessCreationResponse extends ProcessCreationStates {
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    id: string;
+    isPublished: boolean;
+}
+
 // * Activity Types
 export interface KeyValuePair {
     key: string;

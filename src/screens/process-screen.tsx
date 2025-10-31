@@ -9,7 +9,7 @@ import ReplyEmailActivityComponent from '@/components/features/dashboard/process
 import { Box } from '@mantine/core';
 import { useState } from 'react';
 
-const ProcessScreen = () => {
+const ProcessScreen = ({ id }: { id: string }) => {
     const [readEmailModalOpened, setReadEmailModalOpened] = useState(false);
     const [replyEmailModalOpened, setReplyEmailModalOpened] = useState(false);
     // const [emailToModalOpened, setEmailToModalOpened] = useState(false);
@@ -26,10 +26,6 @@ const ProcessScreen = () => {
             setReplyEmailModalOpened(true);
             return;
         }
-        // if (activityType === 'email-to') {
-        //     setEmailToModalOpened(true);
-        //     return;
-        // }
         if (activityType === 'erp-config') {
             setErpConfigModalOpened(true);
             return;

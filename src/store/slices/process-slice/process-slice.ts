@@ -1,10 +1,11 @@
-import { getRecentProcesses } from '@/store/actions/process.action';
-import { RecentProcess } from '@/types/process.types';
+import { createNewProcess, getRecentProcesses } from '@/store/actions/process.action';
+import { ProcessCreationResponse, RecentProcess } from '@/types/process.types';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface ProcessStateProps {
     recentProjects: Array<RecentProcess>;
     processesByCategory: { [categoryId: number]: Array<RecentProcess> };
+    createdProcess: ProcessCreationResponse | null;
     loadingCategories: { [categoryId: number]: boolean };
     isLoading: boolean;
     error: string | null;
@@ -12,6 +13,7 @@ interface ProcessStateProps {
 
 const initialState: ProcessStateProps = {
     recentProjects: [],
+    createdProcess: null,
     processesByCategory: {},
     loadingCategories: {},
     isLoading: false,
@@ -39,6 +41,20 @@ const ProcessSlice = createSlice({
             })
             .addCase(getRecentProcesses.rejected, (state, action) => {
                 console.log("Get recent processes rejected");
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            // Create New Process Thunk Cases
+            .addCase(createNewProcess.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(createNewProcess.fulfilled, (state, action) => {
+                state.createdProcess = action.payload;
+                state.isLoading = false;
+                state.error = null;
+            })
+            .addCase(createNewProcess.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
