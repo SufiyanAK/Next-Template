@@ -28,20 +28,20 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
         const localToken = typeof window !== 'undefined' ? localStorage.getItem('QBotzAuthToken') : null;
         const hasValidToken = authToken || localToken;
 
-        console.log('AuthGuard - Path:', pathname);
-        console.log('AuthGuard - Is Authenticated:', isAuthenticated);
-        console.log('AuthGuard - Has Token:', !!hasValidToken);
-        console.log('AuthGuard - Is Protected Route:', isProtectedRoute);
-        console.log('AuthGuard - Is Public Route:', isPublicRoute);
-        console.log('AuthGuard - Is Root Route:', isRootRoute);
+        // console.log('AuthGuard - Path:', pathname);
+        // console.log('AuthGuard - Is Authenticated:', isAuthenticated);
+        // console.log('AuthGuard - Has Token:', !!hasValidToken);
+        // console.log('AuthGuard - Is Protected Route:', isProtectedRoute);
+        // console.log('AuthGuard - Is Public Route:', isPublicRoute);
+        // console.log('AuthGuard - Is Root Route:', isRootRoute);
 
         // Handle root path redirection
         if (isRootRoute) {
             if (hasValidToken) {
-                console.log('AuthGuard - Redirecting root to home (authenticated)');
+                // console.log('AuthGuard - Redirecting root to home (authenticated)');
                 router.replace('/home');
             } else {
-                console.log('AuthGuard - Redirecting root to login (not authenticated)');
+                // console.log('AuthGuard - Redirecting root to login (not authenticated)');
                 router.replace('/login');
             }
             return;
@@ -49,14 +49,14 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
         // If user is not authenticated and trying to access protected route
         if (!hasValidToken && isProtectedRoute) {
-            console.log('AuthGuard - Redirecting to login (no token, accessing protected route)');
+            // console.log('AuthGuard - Redirecting to login (no token, accessing protected route)');
             router.push('/login');
             return;
         }
 
         // If user is authenticated and trying to access public route (like login)
         if (hasValidToken && isPublicRoute) {
-            console.log('AuthGuard - Redirecting to home (authenticated, accessing public route)');
+            // console.log('AuthGuard - Redirecting to home (authenticated, accessing public route)');
             router.push('/home');
             return;
         }

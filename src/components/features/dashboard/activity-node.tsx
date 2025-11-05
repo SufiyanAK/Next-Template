@@ -107,7 +107,6 @@ const ActivityNode = (props: NodeProps) => {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 nodeData.onConfigClick?.();
-                                console.log("Node Data =>>>>>>>>> ", nodeData)
                             }}
                         >
                             <Settings size={12} />

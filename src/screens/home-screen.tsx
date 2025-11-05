@@ -7,10 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { colors } from "@/utils/customStyles";
 import { Box, Container, Divider, Group, Loader, Paper, Stack, Text, Title } from "@mantine/core";
 import { Clock, File, Folder, Plus, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const HomeComponent = () => {
     const dispatch = useAppDispatch();
+    const router = useRouter();
 
     const { recentProjects, isLoading } = useAppSelector((state) => state.processState);
 
@@ -41,7 +43,7 @@ const HomeComponent = () => {
                     {/* Header Section */}
                     <Stack align="center" gap={8}>
                         <Title order={1} size="h1" c={colors.textPrimary}>
-                            RPA Designer
+                            QBOTZ Designer
                         </Title>
                         <Text c={colors.textSecondary} size="lg">
                             Create, manage, and run automated workflows
@@ -163,6 +165,7 @@ const HomeComponent = () => {
                                         <Group
                                             p={16}
                                             justify="space-between"
+                                            onClick={() => router.push(`/dashboard/process/${project.id}`)}
                                             style={{
                                                 cursor: 'pointer',
                                                 '&:hover': {

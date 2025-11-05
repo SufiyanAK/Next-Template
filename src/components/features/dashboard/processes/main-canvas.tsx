@@ -13,24 +13,106 @@ import {
     NodeTypes,
     BackgroundVariant
 } from '@xyflow/react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import ActivityNode from '../activity-node';
 import { Plus } from 'lucide-react';
+import { ProcessActivityDetail } from '@/types/process.types';
 
 import '@xyflow/react/dist/style.css';
 
 interface MainCanvasComponentProps {
     onActivityConfig?: (nodeId: string, activityType: string) => void;
     onNodeSelect?: (node: { id: string; type: string; label: string; data: any } | null) => void;
+    onNodesChange?: (nodes: any[]) => void;
+    initialActivities?: ProcessActivityDetail[];
 }
 
-const MainCanvasComponent = ({ onActivityConfig, onNodeSelect }: MainCanvasComponentProps) => {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+const MainCanvasComponent = ({ onActivityConfig, onNodeSelect, onNodesChange, initialActivities }: MainCanvasComponentProps) => {
+    const [nodes, setNodes, onNodesChange_Internal] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const initializedRef = useRef(false);
 
+    // Helper function to get activity label based on type
+    const getActivityLabel = useCallback((type: string): string => {
+        const labels: { [key: string]: string } = {
+            'read-email': 'Read Email',
+            'assign': 'Assign',
+            'reply-email': 'Reply Email',
+            'erp-config': 'ERP Config'
+        };
+        return labels[type] || type;
+    }, []);
 
-    console.log("Nodes =>>>>>>>> ", nodes);
-    console.log("Edges =>>>>>>>> ", edges);
+    // Define callback functions
+    const handleActivityConfig = useCallback((nodeId: string, activityType: string) => {
+        onActivityConfig?.(nodeId, activityType);
+    }, [onActivityConfig]);
+
+    const handleDeleteNode = useCallback((nodeId: string) => {
+        setNodes((nodes: any) => nodes.filter((node: any) => node.id !== nodeId));
+        setEdges((edges: any) => edges.filter((edge: any) => edge.source !== nodeId && edge.target !== nodeId));
+    }, [setNodes, setEdges]);
+
+    // Map activities to nodes and edges on initial load (only once)
+    useEffect(() => {
+        if (initialActivities && initialActivities.length > 0 && !initializedRef.current) {
+            initializedRef.current = true;
+
+            // Sort activities by sortOrder
+            const sortedActivities = [...initialActivities].sort((a, b) => a.sortOrder - b.sortOrder);
+
+            // Create nodes from activities
+            const initialNodes = sortedActivities.map((activity, index) => {
+                const nodeId = `node-${activity.id}`;
+                const yPosition = 100 + (index * 150); // Space nodes vertically
+
+                return {
+                    id: nodeId,
+                    type: 'activityNode',
+                    position: { x: 250, y: yPosition },
+                    data: {
+                        label: getActivityLabel(activity.type),
+                        description: `Activity ${activity.sortOrder}`,
+                        activityType: activity.type,
+                        activityData: {
+                            type: activity.type,
+                            ...activity.details
+                        },
+                        onConfigClick: () => handleActivityConfig(nodeId, activity.type),
+                        onDeleteClick: () => handleDeleteNode(nodeId),
+                    }
+                };
+            });
+
+            // Create edges connecting sequential nodes
+            const initialEdges = [];
+            for (let i = 0; i < initialNodes.length - 1; i++) {
+                initialEdges.push({
+                    id: `edge-${i}`,
+                    source: initialNodes[i].id,
+                    target: initialNodes[i + 1].id,
+                    type: 'smoothstep',
+                    animated: true,
+                });
+            }
+
+            setNodes(initialNodes as any);
+            setEdges(initialEdges as any);
+        }
+    }, [initialActivities, getActivityLabel, handleActivityConfig, handleDeleteNode, setNodes, setEdges]);
+
+    // Notify parent component when nodes change (only after initialization and using ref to avoid dep issues)
+    const onNodesChangeRef = useRef(onNodesChange);
+
+    useEffect(() => {
+        onNodesChangeRef.current = onNodesChange;
+    }, [onNodesChange]);
+
+    useEffect(() => {
+        if (initializedRef.current && onNodesChangeRef.current) {
+            onNodesChangeRef.current(nodes);
+        }
+    }, [nodes]);
 
     const nodeTypes: NodeTypes = useMemo(() => ({
         activityNode: ActivityNode,
@@ -40,15 +122,6 @@ const MainCanvasComponent = ({ onActivityConfig, onNodeSelect }: MainCanvasCompo
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
-
-    const handleActivityConfig = useCallback((nodeId: string, activityType: string) => {
-        onActivityConfig?.(nodeId, activityType);
-    }, [onActivityConfig]);
-
-    const handleDeleteNode = useCallback((nodeId: string) => {
-        setNodes((nodes: any) => nodes.filter((node: any) => node.id !== nodeId));
-        setEdges((edges: any) => edges.filter((edge: any) => edge.source !== nodeId && edge.target !== nodeId));
-    }, [setNodes, setEdges]);
 
     const onNodeClick = useCallback((_: any, node: any) => {
         onNodeSelect?.({
@@ -94,11 +167,23 @@ const MainCanvasComponent = ({ onActivityConfig, onNodeSelect }: MainCanvasCompo
                     onDeleteClick: () => handleDeleteNode(nodeId),
                 },
             };
-
-            setNodes((nds: any) => nds.concat(newNode));
+            setNodes((nds: any) => {
+                const temp = nds.concat(newNode);
+                return temp;
+                // return nds.concat(newNode)
+            });
         },
         [setNodes, handleActivityConfig, handleDeleteNode]
     );
+
+    // Don't automatically sync nodes to processData.activities
+    // Activities should only be updated when saved through the modal
+    // This useEffect is removed to prevent overwriting activity data when nodes change
+    // The visual nodes and the activity data are separate concerns:
+    // - Nodes represent the visual flow diagram
+    // - processData.activities contains the actual configuration data
+    // They are linked by activity type, but node changes shouldn't wipe out saved activity data
+
 
     return (
         <Box
@@ -138,7 +223,7 @@ const MainCanvasComponent = ({ onActivityConfig, onNodeSelect }: MainCanvasCompo
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
-                    onNodesChange={onNodesChange}
+                    onNodesChange={onNodesChange_Internal}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     onDragOver={onDragOver}

@@ -1,7 +1,7 @@
 import HomeComponent from '@/screens/home-screen';
 
 export const metadata = {
-    title: 'RPA | Home',
+    title: 'QBOTZ | Home',
     description: 'Welcome to the home page'
 };
 

@@ -101,8 +101,6 @@ export const forgetPassword = createAsyncThunk<
         try {
             const response = await apiPost("/Auth/IAuthFeature/ForgetPassword", userData);
 
-            console.log('Forget Password Response::', response)
-
             // Validate response status
             if (response.status !== 200) {
                 const errorMessage =

@@ -1,22 +1,73 @@
 'use client';
 
 import { colors } from '@/utils/customStyles';
+import { getDataStructuresSelect, getEmailOutputPropertiesSelect } from '@/utils/meta-helpers';
+import { useAppSelector } from '@/store/store';
 import { Box, Button, CloseButton, Group, Modal, Stack, Text, TextInput, Select } from '@mantine/core';
 import { Code } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AssignActivity } from '@/types/process.types';
+import { useDashboard } from '@/contexts/dashboard-context';
 
 interface AssignEmailActivityProps {
     opened: boolean;
     onClose: () => void;
+    onSave?: (activityData: AssignActivity) => void;
+    existingData?: any;
 }
 
-const AssignEmailActivityComponent = ({ opened, onClose }: AssignEmailActivityProps) => {
+const AssignEmailActivityComponent = ({ opened, onClose, onSave, existingData }: AssignEmailActivityProps) => {
+    const { meta } = useAppSelector((state) => state.metaState);
     const [variableName, setVariableName] = useState('');
     const [valueSource, setValueSource] = useState('subject');
+    const { processData, setProcessData } = useDashboard();
+
+    // * Functions: Meta Options
+    const emailOutputPropertyOptions = getDataStructuresSelect(meta.enums || []);
+
+    // Populate form with existing data
+    useEffect(() => {
+        if (opened && existingData) {
+            setVariableName(existingData.field || '');
+            setValueSource(existingData.value || 'subject');
+        } else if (opened && !existingData) {
+            // Reset form when opening without existing data
+            setVariableName('');
+            setValueSource('subject');
+        }
+    }, [opened, existingData]);
 
     const handleSave = () => {
-        // TODO: persist into node data
-        console.log('Save Assign Email', { variableName, valueSource });
+        // Construct the activity data according to the API schema
+        const existingActivity = processData?.activities || [];
+
+        const existingAssignActivities = existingActivity.findIndex(act => act.type === 'assign');
+
+        let updatedActivities;
+
+        if (existingAssignActivities !== -1) {
+            updatedActivities = [...existingActivity];
+            updatedActivities[existingAssignActivities] = {
+                type: 'assign' as const,
+                field: variableName,
+                value: valueSource
+            };
+        } else {
+            updatedActivities = [
+                ...existingActivity,
+                {
+                    type: 'assign' as const,
+                    field: variableName,
+                    value: valueSource
+                }
+            ];
+        }
+
+        setProcessData({
+            ...processData,
+            activities: updatedActivities
+        });
+
         onClose();
     };
 
@@ -44,7 +95,7 @@ const AssignEmailActivityComponent = ({ opened, onClose }: AssignEmailActivityPr
                 <Box>
                     <Stack gap={16}>
                         <TextInput label="Variable Name" placeholder="e.g. emailBody" value={variableName} onChange={(e) => setVariableName(e.currentTarget.value)} size="sm" />
-                        <Select label="Value Source" data={[{ value: 'subject', label: 'Subject' }, { value: 'from', label: 'From' }, { value: 'body', label: 'Body' }]} value={valueSource} onChange={(v) => setValueSource(v || 'subject')} size="sm" />
+                        <Select label="Value Source" data={emailOutputPropertyOptions} value={valueSource} onChange={(v) => setValueSource(v || 'subject')} size="sm" />
                     </Stack>
                 </Box>
 

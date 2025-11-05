@@ -47,6 +47,9 @@ export interface AssignActivity {
 
 export interface ReplyEmailActivity {
     type: 'reply-email';
+    emailAccount: string;
+    useSharedMailbox?: boolean;
+    emailToReply: string;
     replyBody: string;
     replyToAll: boolean;
     saveAsDraft: boolean;
@@ -77,5 +80,50 @@ export type Activity =
 
 // * Initial state for Process Update
 export interface ProcessUpdateStates extends ProcessCreationStates {
+    activities: Activity[] | ProcessActivityDetail[];
+}
+
+// * Process Update Request Payload
+export interface ProcessUpdatePayload {
+    name: string;
+    description: string;
+    processCategoryId: number;
     activities: Activity[];
+}
+
+// * Process Update Response
+export interface ProcessUpdateResponse {
+    id: string;
+    name: string;
+    description: string;
+    processCategoryId: string;
+    activities: Activity[];
+    isPublished: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+}
+
+// * Get Process By ID Response
+export interface ProcessActivityDetail {
+    id: number;
+    processId: number;
+    type: string;
+    activityId: number;
+    sortOrder: number;
+    createdAt: string;
+    updatedAt: string;
+    details: any;
+}
+
+export interface ProcessDetailResponse {
+    id: number;
+    name: string;
+    description: string;
+    processCategoryId: number;
+    isPublished: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    activities: ProcessActivityDetail[];
 }

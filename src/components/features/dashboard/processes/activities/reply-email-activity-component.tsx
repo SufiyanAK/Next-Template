@@ -4,6 +4,7 @@ import { getAccounts } from '@/store/actions/accounts.action';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { initialReplyEmailActivityStates, ReplyEmailActivityStates } from '@/types/activities/reply-email-activity.types';
 import { colors } from '@/utils/customStyles';
+import { getDataStructuresSelect } from '@/utils/meta-helpers';
 import {
     Box,
     Button,
@@ -20,18 +21,27 @@ import {
 } from '@mantine/core';
 import { Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ReplyEmailActivity } from '@/types/process.types';
+import { useDashboard } from '@/contexts/dashboard-context';
 
 interface ReplyEmailActivityComponentProps {
     opened: boolean;
     onClose: () => void;
+    onSave?: (activityData: ReplyEmailActivity) => void;
+    existingData?: any;
 }
 
-const ReplyEmailActivityComponent = ({ opened, onClose }: ReplyEmailActivityComponentProps) => {
+const ReplyEmailActivityComponent = ({ opened, onClose, onSave, existingData }: ReplyEmailActivityComponentProps) => {
     const { accountsList } = useAppSelector((state) => state.accountsState);
+    const { meta } = useAppSelector((state) => state.metaState);
+    const { processData, setProcessData } = useDashboard();
 
     const dispatch = useAppDispatch();
 
     const [replyEmailActivityStates, setReplyEmailActivityStates] = useState<ReplyEmailActivityStates>(initialReplyEmailActivityStates);
+
+    // Get email output properties for the "Email to reply" dropdown
+    const emailOutputOptions = getDataStructuresSelect(meta.enums || []);
 
     const updateReplyEmailActivityState = (key: keyof ReplyEmailActivityStates, value: any) => {
         setReplyEmailActivityStates((prevState) => ({
@@ -40,9 +50,69 @@ const ReplyEmailActivityComponent = ({ opened, onClose }: ReplyEmailActivityComp
         }));
     }
 
+    const handleSave = () => {
+        // Construct the reply email activity data
+        const newActivity: ReplyEmailActivity = {
+            type: 'reply-email',
+            emailAccount: replyEmailActivityStates.emailAccount,
+            useSharedMailbox: replyEmailActivityStates.useSharedMailbox,
+            emailToReply: replyEmailActivityStates.emailToReply,
+            replyBody: replyEmailActivityStates.htmlContent,
+            replyToAll: replyEmailActivityStates.replyToAll === 'true',
+            saveAsDraft: replyEmailActivityStates.saveAsDraft === 'true'
+        };
+
+        const existingActivities = processData?.activities || [];
+
+        // Check if a reply-email activity already exists
+        const existingReplyEmailIndex = existingActivities.findIndex(
+            (activity) => activity.type === 'reply-email'
+        );
+
+        let updatedActivities;
+
+        if (existingReplyEmailIndex !== -1) {
+            // Update existing reply-email activity
+            updatedActivities = existingActivities.map((activity, index) => {
+                if (index === existingReplyEmailIndex) {
+                    return newActivity;
+                }
+                return activity;
+            });
+        } else {
+            // Create new reply-email activity
+            updatedActivities = [...existingActivities, newActivity];
+        }
+
+        setProcessData({
+            ...processData,
+            activities: updatedActivities
+        });
+
+        onClose();
+    }
+
     useEffect(() => {
         dispatch(getAccounts());
     }, [dispatch]);
+
+    // Populate form with existing data
+    useEffect(() => {
+        if (opened && existingData) {
+            setReplyEmailActivityStates({
+                ...initialReplyEmailActivityStates,
+                emailAccount: existingData.emailAccount || '',
+                useSharedMailbox: existingData.useSharedMailbox || false,
+                emailToReply: existingData.emailToReply || '',
+                htmlContent: existingData.replyBody || '',
+                replyToAll: existingData.replyToAll ? 'true' : 'false',
+                saveAsDraft: existingData.saveAsDraft ? 'true' : 'false'
+            });
+        } else if (opened && !existingData) {
+            // Reset form when opening without existing data
+            setReplyEmailActivityStates(initialReplyEmailActivityStates);
+        }
+    }, [opened, existingData]);
 
     return (
         <Modal
@@ -132,8 +202,8 @@ const ReplyEmailActivityComponent = ({ opened, onClose }: ReplyEmailActivityComp
                             <Accordion.Control>Email to reply</Accordion.Control>
                             <Accordion.Panel>
                                 <Select
-                                    data={accountsList?.map((account) => account.user.email)}
-                                    placeholder="Current email"
+                                    data={emailOutputOptions}
+                                    placeholder="Select email variable"
                                     value={replyEmailActivityStates.emailToReply}
                                     onChange={(value) => updateReplyEmailActivityState('emailToReply', value || '')}
                                     size="sm"
@@ -199,6 +269,7 @@ const ReplyEmailActivityComponent = ({ opened, onClose }: ReplyEmailActivityComp
                             variant="filled"
                             size="sm"
                             bg={colors.primary}
+                            onClick={handleSave}
                         >
                             Save Activity
                         </Button>

@@ -15,6 +15,7 @@ const API_ENDPOINTS = {
         update: process.env.NEXT_PUBLIC_UPDATE_PROCESS_BY_ID_ENDPOINT!,
         run: process.env.NEXT_PUBLIC_RUN_PROCESS_BY_ID_ENDPOINT!,
         stop: process.env.NEXT_PUBLIC_STOP_PROCESS_BY_ID_ENDPOINT!,
+        publish: process.env.NEXT_PUBLIC_PUBLISH_PROCESS_BY_ID_ENDPOINT!,
     }
 };
 

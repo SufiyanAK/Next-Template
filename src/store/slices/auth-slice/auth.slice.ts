@@ -42,7 +42,6 @@ const authSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(loginUser.pending, state => {
-                console.log('Login request is pending');
                 state.isLoading = true;
                 state.error = null;
             })
@@ -59,12 +58,10 @@ const authSlice = createSlice({
                 },
             )
             .addCase(loginUser.rejected, (state, action) => {
-                console.log('Login Error in slice', action.payload);
                 state.isLoading = false;
                 state.error = (action.payload as string);
             })
             .addCase(forgetPassword.pending, state => {
-                console.log('Forget Password request is pending');
                 state.forgotPasswordLoading = true;
                 state.forgotPasswordError = null;
             })
@@ -79,7 +76,6 @@ const authSlice = createSlice({
                 },
             )
             .addCase(forgetPassword.rejected, (state, action) => {
-                console.log('Forget Password Error in slice', action.payload);
                 state.forgotPasswordLoading = false;
                 state.forgotPasswordError = (action.payload as string);
             });

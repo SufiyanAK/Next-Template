@@ -1,8 +1,11 @@
+'use client';
+
 import { MetaEnumProcessCategories } from '@/types/meta.types';
 import { RecentProcess } from '@/types/process.types';
 import { colors } from '@/utils/customStyles';
 import { ActionIcon, Box, Collapse, Group, Loader, Paper, Stack, Text, UnstyledButton } from '@mantine/core';
 import { ChevronRight, Clock, File, Folder, MoreHorizontal, Sparkles } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
 interface RecentProjectCardComponentProps {
@@ -22,6 +25,12 @@ const RecentProjectCardComponent: FC<RecentProjectCardComponentProps> = ({
     onCategoryClick,
     formatDate
 }) => {
+    const router = useRouter();
+
+    const handleProcessClick = (processId: string) => {
+        router.push(`/dashboard/process/${processId}`);
+    };
+
     return (
         <Box mt={32}>
             <Stack gap={16}>
@@ -134,6 +143,7 @@ const RecentProjectCardComponent: FC<RecentProjectCardComponentProps> = ({
                                             <Box
                                                 key={process.id}
                                                 p={16}
+                                                onClick={() => handleProcessClick(process.id)}
                                                 style={{
                                                     borderBottom: index < processes.length - 1
                                                         ? `1px solid ${colors.light}`

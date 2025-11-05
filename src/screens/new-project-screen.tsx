@@ -91,7 +91,7 @@ const NewProjectComponent = () => {
         dispatch(createNewProcess({
             processData: {
                 name: baseFormFields.name,
-                categoryId: parseInt(baseFormFields.processCategoryId),
+                processCategoryId: parseInt(baseFormFields.processCategoryId),
                 description: baseFormFields.description
             },
             onSuccess: (response) => {

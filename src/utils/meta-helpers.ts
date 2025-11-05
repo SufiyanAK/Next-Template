@@ -33,3 +33,27 @@ export const getEmailOutputPropertiesSelect = (items: MetaEnums[]) => {
     const props = items.filter(item => item.type === 'EMAIL_PROPERITES');
     return metaToSelectFormat(props);
 };
+
+/**
+ * Formats request methods for dropdown
+ */
+export const getRequestMethodsSelect = (items: MetaEnums[]) => {
+    const methods = items.filter(item => item.type === 'REQUEST_METHODS');
+    return metaToSelectFormat(methods);
+}
+
+/**
+ * Formats data structure methods for dropdown
+ */
+export const getDataStructuresSelect = (items: MetaEnums[]) => {
+    const dataStructure = items.filter(item => item.type === 'DATA_STRUCTURES');
+    return metaToSelectFormat(dataStructure);
+}
+
+/**
+ * Formats Auth types for dropdown
+ */
+export const getAuthTypesSelect = (items: MetaEnums[]) => {
+    const authTypes = items.filter(item => item.type === 'AUTH_TYPES');
+    return metaToSelectFormat(authTypes);
+}

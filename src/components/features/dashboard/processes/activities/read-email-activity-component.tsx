@@ -20,15 +20,19 @@ import {
     Mail
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ReadEmailActivity } from '@/types/process.types';
+import { useDashboard } from '@/contexts/dashboard-context';
 
 interface ReadEmailActivityComponentProps {
     opened: boolean;
     onClose: () => void;
+    existingData?: any;
 }
 
-const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityComponentProps) => {
+const ReadEmailActivityComponent = ({ opened, onClose, existingData }: ReadEmailActivityComponentProps) => {
     const { accountsList } = useAppSelector((state) => state.accountsState)
     const { meta } = useAppSelector((state) => state.metaState);
+    const { processData, setProcessData } = useDashboard();
 
     const dispatch = useAppDispatch();
 
@@ -50,13 +54,96 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
         }));
     }
 
-    // * Functions: Meta Options
+
+    const handleSave = () => {
+        // Find the selected account
+        const selectedAccount = accountsList?.find(
+            (account) => account.user.email === readEmailActivityStates.receiverAddress
+        );
+
+        if (!selectedAccount) {
+            console.error('No account selected');
+            return;
+        }
+
+        // Construct the new filter if provided
+        const newFilter = readEmailActivityStates.filterSubject && readEmailActivityStates.filterValue
+            ? { key: readEmailActivityStates.filterSubject, value: readEmailActivityStates.filterValue }
+            : null;
+
+        const existingActivities = processData?.activities || [];
+
+        // Check if a read-email activity already exists
+        const existingReadEmailIndex = existingActivities.findIndex(
+            (activity) => activity.type === 'read-email'
+        );
+
+        let updatedActivities;
+
+        if (existingReadEmailIndex !== -1) {
+            // Update existing read-email activity
+            const existingReadEmail = existingActivities[existingReadEmailIndex] as ReadEmailActivity;
+
+            updatedActivities = existingActivities.map((activity, index) => {
+                if (index === existingReadEmailIndex) {
+                    return {
+                        ...existingReadEmail,
+                        accountId: selectedAccount.id,
+                        emailFolder: readEmailActivityStates.emailFolder,
+                        attachmentsOnly: true,
+                        additionalFilters: newFilter
+                            ? [...(existingReadEmail.additionalFilters || []), newFilter]
+                            : existingReadEmail.additionalFilters
+                    } as ReadEmailActivity;
+                }
+                return activity;
+            });
+        } else {
+            // Create new read-email activity
+            const newActivity: ReadEmailActivity = {
+                type: 'read-email',
+                accountId: selectedAccount.id,
+                emailFolder: readEmailActivityStates.emailFolder,
+                attachmentsOnly: false,
+                additionalFilters: newFilter ? [newFilter] : []
+            };
+
+            updatedActivities = [...existingActivities, newActivity];
+        }
+
+        setProcessData({
+            ...processData,
+            activities: updatedActivities
+        });
+
+        onClose();
+    }
+
     const folderOptions = getEmailFoldersSelect(meta.enums || []);
     const filterOptions = getEmailFiltersSelect(meta.enums || []);
 
     useEffect(() => {
         dispatch(getAccounts())
     }, [dispatch])
+
+    // Populate form with existing data
+    useEffect(() => {
+        if (opened && existingData) {
+            // Find the account by accountId
+            const account = accountsList?.find((acc) => acc.id === existingData.accountId);
+
+            setReadEmailActivityStates({
+                receiverAddress: account?.user.email || '',
+                emailFolder: existingData.emailFolder || '',
+                filterSubject: existingData.additionalFilters?.[0]?.key || '',
+                filterValue: existingData.additionalFilters?.[0]?.value || '',
+                filterCondition: 'Contains' // Default value, can be enhanced if stored
+            });
+        } else if (opened && !existingData) {
+            // Reset form when opening without existing data
+            setReadEmailActivityStates(initialReadEmailActivityStates);
+        }
+    }, [opened, existingData, accountsList]);
 
     return (
         <Modal
@@ -128,6 +215,7 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                             </Text>
                             <Select
                                 data={accountsList?.map((account) => account.user.email)}
+                                value={readEmailActivityStates.receiverAddress}
                                 placeholder="Email address to read from"
                                 onChange={(value) => updateReadEmailActivityState('receiverAddress', value || '')}
                                 size="sm"
@@ -261,6 +349,7 @@ const ReadEmailActivityComponent = ({ opened, onClose }: ReadEmailActivityCompon
                             variant="filled"
                             size="sm"
                             bg={colors.primary}
+                            onClick={handleSave}
                         >
                             Save Activity
                         </Button>
