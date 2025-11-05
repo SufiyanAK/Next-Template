@@ -1,12 +1,14 @@
 'use client';
 
 import DashboardToolbarComponent from '@/components/features/dashboard/dashboard-toolbar';
+import { DashboardProvider, useDashboard } from '@/contexts/dashboard-context';
 import { Box } from '@mantine/core';
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 
 const DashboardLayoutContent = ({ children }: { children: ReactNode }) => {
     const pathname = usePathname();
+    const { onSaveProcess, isSaving, onPublishProcess, isPublishing } = useDashboard();
 
     // Determine active tab from pathname
     const getActiveTab = () => {
@@ -22,6 +24,10 @@ const DashboardLayoutContent = ({ children }: { children: ReactNode }) => {
             {/* Dashboard Toolbar with Tabs */}
             <DashboardToolbarComponent
                 activeTab={activeTab}
+                onSave={onSaveProcess}
+                isSaving={isSaving}
+                onPublish={onPublishProcess}
+                isPublishing={isPublishing}
             />
 
             {/* Tab Content */}
@@ -34,9 +40,11 @@ const DashboardLayoutContent = ({ children }: { children: ReactNode }) => {
 
 const DashboardRootLayout = ({ children }: { children: ReactNode }) => {
     return (
-        <DashboardLayoutContent>
-            {children}
-        </DashboardLayoutContent>
+        <DashboardProvider>
+            <DashboardLayoutContent>
+                {children}
+            </DashboardLayoutContent>
+        </DashboardProvider>
     );
 };
 

@@ -9,7 +9,7 @@ interface EmailViewerPageProps {
 export async function generateMetadata({ params }: EmailViewerPageProps) {
     const { accountId } = await params;
     return {
-        title: `RPA | Account ${accountId} Emails`,
+        title: `QBOTZ | Account ${accountId} Emails`,
         description: `Email viewer for account ${accountId}`,
     };
 }

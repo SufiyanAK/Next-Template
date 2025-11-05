@@ -39,7 +39,6 @@ const EmailToActivityComponent = ({ opened, onClose }: EmailToActivityProps) => 
 
     const handleSave = () => {
         // TODO: persist into node data
-        console.log('Save Email To activity', { fromAddress, to: toList, cc: ccList });
         onClose();
     };
 

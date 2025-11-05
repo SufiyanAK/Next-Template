@@ -1,7 +1,7 @@
 import RecentProjectComponent from "@/screens/recent-project-screen";
 
 export const metadata = {
-    title: 'RPA | Recent Projects',
+    title: 'QBOTZ | Recent Projects',
     description: 'View and manage your recent projects'
 };
 

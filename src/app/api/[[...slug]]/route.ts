@@ -27,10 +27,10 @@ async function proxyRequest(req: NextRequest, method: string) {
             // Try to parse as JSON first
             const jsonData = await req.json();
             body = JSON.stringify(jsonData);
-            console.log("Request payload: =>>>>>>>>", jsonData);
+            // console.log("Request payload: =>>>>>>>>", jsonData);
         } catch {
             // If it's not JSON, fall back to text
-            console.log("Not JSON payload, using text");
+            // console.log("Not JSON payload, using text");
             const requestClone = req.clone();
             body = await requestClone.text();
         }
@@ -52,7 +52,7 @@ async function proxyRequest(req: NextRequest, method: string) {
         });
     } else {
         const errorText = await response.text();
-        console.log("Error response:", errorText);
+        // console.log("Error response:", errorText);
         return new NextResponse(errorText, { status: response.status });
     }
 }

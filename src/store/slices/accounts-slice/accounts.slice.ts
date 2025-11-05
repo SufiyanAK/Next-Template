@@ -26,35 +26,29 @@ const accounts = createSlice({
         builder
             // Get Accounts Thunk Cases
             .addCase(getAccounts.pending, (state) => {
-                console.log("Get accounts in pending");
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(getAccounts.fulfilled, (state, action) => {
-                console.log("Get accounts fulfilled");
                 state.accountsList = action.payload;
                 state.isLoading = false;
                 state.error = null;
             })
             .addCase(getAccounts.rejected, (state, action) => {
-                console.log("Get accounts rejected");
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
             // Get Emails By Account ID Thunk Cases
             .addCase(getEmailsByAccountId.pending, (state) => {
-                console.log("Get emails by account ID in pending");
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(getEmailsByAccountId.fulfilled, (state, action) => {
-                console.log("Get emails by account ID fulfilled");
                 state.emailsByAccountId = action.payload;
                 state.isLoading = false;
                 state.error = null;
             })
             .addCase(getEmailsByAccountId.rejected, (state, action) => {
-                console.log("Get emails by account ID rejected");
                 state.isLoading = false;
                 state.error = action.payload as string;
             });

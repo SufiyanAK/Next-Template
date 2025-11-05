@@ -10,12 +10,9 @@ export const apiGet = async (endpoint: string, params?: { [key: string]: number 
             url: endpoint,
             params
         });
-        return { success: true, data: response.data, status: response.status };
+        return { success: true, data: response.data, status: response.status, message: response.data?.message };
     } catch (error: any) {
-        const { status, data } = error?.response || {};
-
-        console.log("Error from API: ", error);
-        console.log("Error response data: ", data);
+        const { status } = error?.response || {};
 
         // Handle 401 - Unauthorized
         if (status === 401) {
@@ -27,14 +24,15 @@ export const apiGet = async (endpoint: string, params?: { [key: string]: number 
 };
 
 // Generic function for POST requests
-export const apiPost = async (endpoint: string, payload: any) => {
+export const apiPost = async (endpoint: string, payload: any, params?: { [key: string]: number | string }) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.POST,
             url: endpoint,
-            data: payload
+            data: payload,
+            params
         });
-        return { success: true, data: response.data, status: response.status };
+        return { success: true, data: response.data, status: response.status, message: response.data?.message };
     } catch (error: any) {
         const { status } = error?.response || {};
 
@@ -48,14 +46,15 @@ export const apiPost = async (endpoint: string, payload: any) => {
 };
 
 // Generic function for PUT requests
-export const apiPut = async (endpoint: string, payload: any) => {
+export const apiPut = async (endpoint: string, payload: any, params?: { [key: string]: number | string }) => {
     try {
         const response = await axiosInstance({
             method: API_METHODS.PUT,
             url: endpoint,
-            data: payload
+            data: payload,
+            params
         });
-        return { success: true, data: response.data, status: response.status };
+        return { success: true, data: response.data, status: response.status, message: response.data?.message };
     } catch (error: any) {
         const { status } = error?.response || {};
 
@@ -75,7 +74,7 @@ export const apiDelete = async (endpoint: string) => {
             method: API_METHODS.DELETE,
             url: endpoint
         });
-        return { success: true, data: response.data, status: response.status };
+        return { success: true, data: response.data, status: response.status, message: response.data?.message };
     } catch (error: any) {
         const { status } = error?.response || {};
 

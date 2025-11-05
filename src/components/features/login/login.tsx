@@ -25,9 +25,7 @@ import { toast } from 'sonner';
 const LoginComponent = () => {
     const router = useRouter();
 
-    const { authenticatedUser, isLoading } = useAppSelector((state: RootState) => state.authState);
-
-    console.log("authenticatedUser =>>>>> ", authenticatedUser);
+    const { isLoading } = useAppSelector((state: RootState) => state.authState);
 
     const dispatch = useAppDispatch();
     const [loginCredentials, setLoginCredentials] = useState({ email: '', password: '' });

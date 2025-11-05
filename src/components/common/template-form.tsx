@@ -122,7 +122,7 @@ const TemplateFormComponent: FC<TemplateFormComponentProps> = ({
                     bg={colors.primary}
                     disabled={!selectedTemplate}
                 >
-                    Next
+                    Create
                 </Button>
             </Group>
         </Stack>

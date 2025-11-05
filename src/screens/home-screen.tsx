@@ -1,30 +1,34 @@
-import CreateProjectCardComponent from "@/components/common/create-project-card";
-import { colors } from "@/utils/customStyles";
-import { Box, Container, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import { Clock, File, Folder, Plus } from "lucide-react";
+'use client';
 
-const recentProjects = [
-    {
-        id: 1,
-        name: "Invoice Processing",
-        description: "Automated invoice data extraction and entry",
-        date: "15/10/2023"
-    },
-    {
-        id: 2,
-        name: "Customer Onboarding",
-        description: "New customer data verification and system setup",
-        date: "15/10/2023"
-    },
-    {
-        id: 3,
-        name: "Email Automation",
-        description: "Automated email response and categorization",
-        date: "15/10/2023"
-    }
-];
+import CreateProjectCardComponent from "@/components/common/create-project-card";
+import { getMeta } from "@/store/actions/meta.action";
+import { getRecentProcesses } from "@/store/actions/process.action";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { colors } from "@/utils/customStyles";
+import { Box, Container, Divider, Group, Loader, Paper, Stack, Text, Title } from "@mantine/core";
+import { Clock, File, Folder, Plus, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const HomeComponent = () => {
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+
+    const { recentProjects, isLoading } = useAppSelector((state) => state.processState);
+
+    useEffect(() => {
+        dispatch(getMeta());
+        dispatch(getRecentProcesses());
+    }, [dispatch]);
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
     return (
         <Box
             style={{
@@ -39,7 +43,7 @@ const HomeComponent = () => {
                     {/* Header Section */}
                     <Stack align="center" gap={8}>
                         <Title order={1} size="h1" c={colors.textPrimary}>
-                            RPA Designer
+                            QBOTZ Designer
                         </Title>
                         <Text c={colors.textSecondary} size="lg">
                             Create, manage, and run automated workflows
@@ -97,39 +101,121 @@ const HomeComponent = () => {
                                 borderTop: 'none'
                             }}
                         >
-                            {recentProjects.map((project, index) => (
-                                <Box key={project.id}>
-                                    <Group
-                                        p={16}
-                                        justify="space-between"
-                                        style={{
-                                            cursor: 'pointer',
-                                            '&:hover': {
-                                                backgroundColor: colors.background
-                                            }
-                                        }}
-                                    >
-                                        <Group gap={12}>
-                                            <File size={20} color={colors.primary} />
-                                            <Stack gap={4}>
-                                                <Text fw={600} c={colors.textPrimary}>
-                                                    {project.name}
-                                                </Text>
-                                                <Text size="sm" c={colors.textSecondary}>
-                                                    {project.description}
-                                                </Text>
-                                            </Stack>
-                                        </Group>
-                                        <Group gap={8}>
-                                            <Clock size={16} color={colors.textSecondary} />
-                                            <Text size="sm" c={colors.textSecondary}>
-                                                {project.date}
+                            {isLoading ? (
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: '60px 20px',
+                                        minHeight: '300px'
+                                    }}
+                                >
+                                    <Stack align="center" gap={20}>
+                                        {/* Cute animated loader with sparkles */}
+                                        <Box style={{ position: 'relative' }}>
+                                            <Loader size="lg" color={colors.primary} type="dots" />
+                                            <Box
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: -10,
+                                                    left: -10,
+                                                    animation: 'sparkle 1.5s ease-in-out infinite'
+                                                }}
+                                            >
+                                                <Sparkles size={16} color={colors.secondary} />
+                                            </Box>
+                                            <Box
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: -10,
+                                                    right: -10,
+                                                    animation: 'sparkle 1.5s ease-in-out infinite 0.5s'
+                                                }}
+                                            >
+                                                <Sparkles size={14} color={colors.primary} />
+                                            </Box>
+                                        </Box>
+                                        <Stack align="center" gap={8}>
+                                            <Text size="lg" fw={600} c={colors.textPrimary}>
+                                                Loading your processes...
                                             </Text>
-                                        </Group>
-                                    </Group>
-                                    {index < recentProjects.length - 1 && <Divider />}
+                                            <Text size="sm" c={colors.textSecondary}>
+                                                Hang tight! We&apos;re fetching your automation workflows ✨
+                                            </Text>
+                                        </Stack>
+                                    </Stack>
+                                    <style jsx global>{`
+                                        @keyframes sparkle {
+                                            0%, 100% {
+                                                opacity: 1;
+                                                transform: scale(1) rotate(0deg);
+                                            }
+                                            50% {
+                                                opacity: 0.5;
+                                                transform: scale(1.2) rotate(180deg);
+                                            }
+                                        }
+                                    `}</style>
                                 </Box>
-                            ))}
+                            ) : recentProjects && recentProjects.length > 0 ? (
+                                recentProjects.map((project, index) => (
+                                    <Box key={project.id}>
+                                        <Group
+                                            p={16}
+                                            justify="space-between"
+                                            onClick={() => router.push(`/dashboard/process/${project.id}`)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                '&:hover': {
+                                                    backgroundColor: colors.background
+                                                }
+                                            }}
+                                        >
+                                            <Group gap={12}>
+                                                <File size={20} color={colors.primary} />
+                                                <Stack gap={4}>
+                                                    <Text fw={600} c={colors.textPrimary}>
+                                                        {project.name}
+                                                    </Text>
+                                                    <Text size="sm" c={colors.textSecondary}>
+                                                        {project.description}
+                                                    </Text>
+                                                </Stack>
+                                            </Group>
+                                            <Group gap={8}>
+                                                <Clock size={16} color={colors.textSecondary} />
+                                                <Text size="sm" c={colors.textSecondary}>
+                                                    {formatDate(project.createdAt)}
+                                                </Text>
+                                            </Group>
+                                        </Group>
+                                        {index < recentProjects.length - 1 && <Divider />}
+                                    </Box>
+                                ))
+                            ) : (
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: '60px 20px',
+                                        minHeight: '300px'
+                                    }}
+                                >
+                                    <Stack align="center" gap={16}>
+                                        <Folder size={48} color={colors.light} />
+                                        <Text size="lg" fw={600} c={colors.textPrimary}>
+                                            No recent processes
+                                        </Text>
+                                        <Text size="sm" c={colors.textSecondary} ta="center">
+                                            Get started by creating your first automation workflow!
+                                        </Text>
+                                    </Stack>
+                                </Box>
+                            )}
                         </Paper>
                     </Box>
                 </Stack>

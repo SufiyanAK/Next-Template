@@ -9,8 +9,6 @@ export const getMeta = createAsyncThunk<MetaEnumStates>(
     async (_, { rejectWithValue }) => {
         const response = await apiGet(API_ENDPOINTS.auth.meta);
 
-        console.log("Response Meta: ", response)
-
         // Validate response status
         if (response.status !== 200) {
             const errorMessage =

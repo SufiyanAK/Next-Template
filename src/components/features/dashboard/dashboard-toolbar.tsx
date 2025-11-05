@@ -4,17 +4,38 @@ import { colors } from '@/utils/customStyles';
 import { Box, Button, Group, Text } from '@mantine/core';
 import { Play, Save, Upload, Mail, Workflow } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useDashboard } from '@/contexts/dashboard-context';
 
 interface DashboardToolbarComponentProps {
     activeTab: string;
+    onSave?: () => void;
+    onRun?: () => void;
+    onPublish?: () => void;
+    isSaving?: boolean;
+    isPublishing?: boolean;
 }
 
-const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps) => {
+const DashboardToolbarComponent = ({
+    activeTab,
+    onSave,
+    onRun,
+    onPublish,
+    isSaving = false,
+    isPublishing = false
+}: DashboardToolbarComponentProps) => {
     const router = useRouter();
+    const { currentProcessId } = useDashboard();
 
     const handleTabClick = (tab: string) => {
-        const route = tab === 'accounts' ? '/dashboard/accounts' : '/dashboard/process';
-        router.push(route);
+        if (tab === 'accounts') {
+            router.push('/dashboard/accounts');
+        } else if (tab === 'process') {
+            // If we have a current process ID, navigate to it, otherwise go to base process route
+            const route = currentProcessId
+                ? `/dashboard/process/${currentProcessId}`
+                : '/dashboard/process';
+            router.push(route);
+        }
     };
     return (
         <Box
@@ -106,6 +127,9 @@ const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps
                             radius={6}
                             leftSection={<Save size={18} />}
                             bg={colors.primary}
+                            onClick={onSave}
+                            loading={isSaving}
+                            disabled={isSaving}
                             styles={{
                                 label: {
                                     fontSize: '14px',
@@ -116,7 +140,7 @@ const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps
                                 }
                             }}
                         >
-                            Saved
+                            {isSaving ? 'Saving...' : 'Save'}
                         </Button>
 
                         <Button
@@ -125,6 +149,7 @@ const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps
                             radius={6}
                             leftSection={<Play size={18} />}
                             bg={colors.green}
+                            onClick={onRun}
                             styles={{
                                 label: {
                                     fontSize: '14px',
@@ -144,6 +169,9 @@ const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps
                             radius={6}
                             leftSection={<Upload size={18} />}
                             bg={colors.textPrimary}
+                            onClick={onPublish}
+                            loading={isPublishing}
+                            disabled={isPublishing}
                             styles={{
                                 label: {
                                     fontSize: '14px',
@@ -154,7 +182,7 @@ const DashboardToolbarComponent = ({ activeTab }: DashboardToolbarComponentProps
                                 }
                             }}
                         >
-                            Publish
+                            {isPublishing ? 'Publishing...' : 'Publish'}
                         </Button>
                     </Group>
                 )}

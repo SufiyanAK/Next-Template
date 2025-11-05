@@ -4,28 +4,36 @@ import BasicFormComponent from '@/components/common/basic-form'
 import StepperComponent from '@/components/common/stepper'
 import TemplateFormComponent from '@/components/common/template-form';
 import TitleComponent from '@/components/common/title'
+import { createNewProcess } from '@/store/actions/process.action';
+import { useAppDispatch, useAppSelector } from '@/store/store';
 import { Box, Container } from '@mantine/core'
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export interface BaseFormFieldsProps {
-    processName: string;
+    name: string;
     description: string;
+    processCategoryId: string;
     activeStep: number;
 }
 
 const initialBaseFormFields: BaseFormFieldsProps = {
-    processName: '',
+    name: '',
     description: '',
+    processCategoryId: '',
     activeStep: 0
 }
 
 const NewProjectComponent = () => {
     const router = useRouter();
+    const dispatch = useAppDispatch();
 
+    const { meta: {
+        processCategories
+    } } = useAppSelector((state) => state.metaState);
     const [baseFormFields, setBaseFormFields] = useState<BaseFormFieldsProps>(initialBaseFormFields)
-    const [baseFormErrors, setBaseFormErrors] = useState<{ processName?: string; description?: string }>({})
+    const [baseFormErrors, setBaseFormErrors] = useState<{ name?: string; description?: string; processCategoryId?: string }>({})
 
     const handleStepChange = (step: number) => {
         setBaseFormFields({ ...baseFormFields, activeStep: step })
@@ -34,28 +42,36 @@ const NewProjectComponent = () => {
     const handleBaseFormFieldChange = (field: keyof BaseFormFieldsProps, value: string | number) => {
         setBaseFormFields({ ...baseFormFields, [field]: value });
 
-        if (field === 'processName' && baseFormErrors.processName) {
-            setBaseFormErrors((prev) => ({ ...prev, processName: undefined }));
+        if (field === 'name' && baseFormErrors.name) {
+            setBaseFormErrors((prev) => ({ ...prev, name: undefined }));
         }
 
         if (field === 'description' && baseFormErrors.description) {
             setBaseFormErrors((prev) => ({ ...prev, description: undefined }));
         }
+
+        if (field === 'processCategoryId' && baseFormErrors.processCategoryId) {
+            setBaseFormErrors((prev) => ({ ...prev, processCategoryId: undefined }));
+        }
     }
 
     const handleNext = () => {
-        if (!baseFormFields.processName && !baseFormFields.description) {
-            setBaseFormErrors({ processName: 'Process name is required', description: 'Description is required' });
-            return;
-        }
+        const errors: { name?: string; description?: string; processCategoryId?: string } = {};
 
-        if (!baseFormFields.processName) {
-            setBaseFormErrors((prev) => ({ ...prev, processName: 'Process name is required' }));
-            return;
+        if (!baseFormFields.name) {
+            errors.name = 'Process name is required';
         }
 
         if (!baseFormFields.description) {
-            setBaseFormErrors((prev) => ({ ...prev, description: 'Description is required' }));
+            errors.description = 'Description is required';
+        }
+
+        if (!baseFormFields.processCategoryId) {
+            errors.processCategoryId = 'Process category is required';
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setBaseFormErrors(errors);
             return;
         }
 
@@ -69,6 +85,26 @@ const NewProjectComponent = () => {
     const handleCancel = () => {
         router.push('/home');
         setBaseFormFields(initialBaseFormFields);
+    }
+
+    const handleProjectCreate = async () => {
+        dispatch(createNewProcess({
+            processData: {
+                name: baseFormFields.name,
+                processCategoryId: parseInt(baseFormFields.processCategoryId),
+                description: baseFormFields.description
+            },
+            onSuccess: (response) => {
+                console.log('Process created successfully:', response);
+                toast.success('Process created successfully!');
+                router.push(`/dashboard/process/${response.id}`);
+                setBaseFormFields(initialBaseFormFields);
+            },
+            onError: (error) => {
+                console.error('Failed to create process:', error);
+                toast.error(`Failed to create process: ${error}`);
+            }
+        }));
     }
 
     return (
@@ -94,16 +130,14 @@ const NewProjectComponent = () => {
                             handleCancel={handleCancel}
                             baseFormFields={baseFormFields}
                             setBaseFormFields={handleBaseFormFieldChange}
-                            baseFormFieldsError={baseFormErrors as { processName: string, description: string }}
+                            baseFormFieldsError={baseFormErrors as { name: string, description: string, processCategoryId: string }}
+                            processCategories={processCategories}
                         />
                     ) : (
                         <TemplateFormComponent
                             handleCancel={handleCancel}
                             handleBack={handleBack}
-                            handleNext={() => {
-                                router.push('/dashboard');
-                                toast.success('Process Created Successfully!')
-                            }}
+                            handleNext={handleProjectCreate}
                         />
                     )
                 }

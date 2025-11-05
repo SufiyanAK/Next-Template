@@ -1,7 +1,9 @@
 'use client';
 
-import { ERPConfigActivityState, initialERPConfigActivityState } from '@/types/erp-config-activity.types';
+import { ErpConfigActivity } from '@/types/process.types';
 import { colors } from '@/utils/customStyles';
+import { getAuthTypesSelect, getRequestMethodsSelect } from '@/utils/meta-helpers';
+import { useAppSelector } from '@/store/store';
 import {
     Box,
     Button,
@@ -17,15 +19,27 @@ import {
     ActionIcon
 } from '@mantine/core';
 import { Package, Plus, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ERPConfigActivityState, initialERPConfigActivityState } from '@/types/activities/erp-config-activity.types';
+import { useDashboard } from '@/contexts/dashboard-context';
 
 interface ERPConfigActivityProps {
     opened: boolean;
     onClose: () => void;
+    onSave?: (activityData: ErpConfigActivity) => void;
+    existingData?: any;
 }
 
-const ERPConfigActivityComponent = ({ opened, onClose }: ERPConfigActivityProps) => {
+const ERPConfigActivityComponent = ({ opened, onClose, onSave, existingData }: ERPConfigActivityProps) => {
+    const { meta } = useAppSelector((state) => state.metaState);
+    const { processData, setProcessData } = useDashboard();
     const [erpConfigActivityStates, setErpConfigActivityStates] = useState<ERPConfigActivityState>(initialERPConfigActivityState);
+
+    // * Functions: Meta Options
+    const requestMethodOptions = getRequestMethodsSelect(meta.enums || []);
+    const authTypeOptions = getAuthTypesSelect(meta.enums || []);
+    // Data structure options available for future body structure configuration
+    // const dataStructureOptions = getDataStructuresSelect(meta.enums || []);
 
 
     const updateERPConfigState = (key: keyof ERPConfigActivityState, value: any) => {
@@ -55,9 +69,88 @@ const ERPConfigActivityComponent = ({ opened, onClose }: ERPConfigActivityProps)
         updateERPConfigState('bodyParams', updatedParams);
     }
 
+    // Populate form with existing data
+    useEffect(() => {
+        if (opened && existingData) {
+            setErpConfigActivityStates({
+                ...initialERPConfigActivityState,
+                endpoint: existingData.endpointUrl || '',
+                method: existingData.requestMethod || 'GET',
+                timeout: existingData.timeout ? `${existingData.timeout / 1000}s` : '30s',
+                authType: existingData.auth?.authType || 'Basic Auth',
+                username: existingData.auth?.username || '',
+                password: existingData.auth?.password || '',
+                headerRows: existingData.headers?.map((header: any, index: number) => ({
+                    id: index + 1,
+                    name: header.key || '',
+                    value: header.value || ''
+                })) || [{ id: 1, name: '', value: '' }],
+                bodyParams: existingData.params?.map((param: any, index: number) => ({
+                    id: index + 1,
+                    name: param.key || '',
+                    value: param.value || ''
+                })) || [{ id: 1, name: '', value: '' }]
+            });
+        } else if (opened && !existingData) {
+            // Reset form when opening without existing data
+            setErpConfigActivityStates(initialERPConfigActivityState);
+        }
+    }, [opened, existingData]);
+
     const handleSave = () => {
-        // TODO: persist into node data
-        console.log('Save ERP config', erpConfigActivityStates);
+        // Parse timeout to number (remove 's' if present)
+        const timeoutValue = parseInt(erpConfigActivityStates.timeout.replace('s', ''));
+
+        // Construct the activity data according to the API schema
+        const activityData: ErpConfigActivity = {
+            type: 'erp-config',
+            endpointUrl: erpConfigActivityStates.endpoint,
+            requestMethod: erpConfigActivityStates.method,
+            timeout: isNaN(timeoutValue) ? 30000 : timeoutValue * 1000, // Convert to milliseconds
+            auth: {
+                authType: erpConfigActivityStates.authType,
+                username: erpConfigActivityStates.username,
+                password: erpConfigActivityStates.password
+            },
+            headers: erpConfigActivityStates.headerRows.map(row => ({
+                key: row.name,
+                value: row.value
+            })),
+            params: erpConfigActivityStates.bodyParams.map(param => ({
+                key: param.name,
+                value: param.value
+            }))
+        };
+
+        // Update processData.activities directly
+        const existingActivities = processData?.activities || [];
+        const existingErpConfigIndex = existingActivities.findIndex(
+            (activity) => activity.type === 'erp-config'
+        );
+
+        let updatedActivities;
+
+        if (existingErpConfigIndex !== -1) {
+            // Update existing erp-config activity
+            updatedActivities = existingActivities.map((activity, index) => {
+                if (index === existingErpConfigIndex) {
+                    return activityData;
+                }
+                return activity;
+            });
+        } else {
+            // Create new erp-config activity
+            updatedActivities = [...existingActivities, activityData];
+        }
+
+        setProcessData({
+            ...processData,
+            activities: updatedActivities
+        });
+
+        // Still call onSave callback for backward compatibility
+        onSave?.(activityData);
+
         onClose();
     };
 
@@ -100,7 +193,7 @@ const ERPConfigActivityComponent = ({ opened, onClose }: ERPConfigActivityProps)
                                         <Box style={{ flex: 1 }}>
                                             <Select
                                                 label="Request Method"
-                                                data={["GET", "POST", "PUT", "DELETE"]}
+                                                data={requestMethodOptions}
                                                 value={erpConfigActivityStates.method}
                                                 onChange={(v) => updateERPConfigState('method', v || 'GET')}
                                                 size="sm"
@@ -123,7 +216,7 @@ const ERPConfigActivityComponent = ({ opened, onClose }: ERPConfigActivityProps)
                             <Accordion.Control>Authentication</Accordion.Control>
                             <Accordion.Panel>
                                 <Stack gap={12}>
-                                    <Select label="Authentication Type" data={["Simple HTTP", "OAuth2"]} value={erpConfigActivityStates.authType} onChange={(v) => updateERPConfigState('authType', v || 'Simple HTTP')} size="sm" />
+                                    <Select label="Authentication Type" data={authTypeOptions} value={erpConfigActivityStates.authType} onChange={(v) => updateERPConfigState('authType', v || 'Simple HTTP')} size="sm" />
                                     <TextInput label="Username" placeholder="QBS_ABAP" value={erpConfigActivityStates.username} onChange={(e) => updateERPConfigState('username', e.currentTarget.value)} size="sm" />
                                     <TextInput label="Password" placeholder="password" value={erpConfigActivityStates.password} onChange={(e) => updateERPConfigState('password', e.currentTarget.value)} size="sm" />
                                 </Stack>

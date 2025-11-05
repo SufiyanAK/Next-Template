@@ -5,12 +5,15 @@ import DashboardLeftSidebarComponent from './processes/left-sidebar';
 import MainCanvasComponent from './processes/main-canvas';
 import DashboardRightPropertiesPanelComponent from './processes/right-properties-panel';
 import { Group } from '@mantine/core';
+import { ProcessActivityDetail } from '@/types/process.types';
 
 interface ProcessTabComponentProps {
     onActivityConfig: (nodeId: string, activityType: string) => void;
+    onNodesChange?: (nodes: any[]) => void;
+    initialActivities?: ProcessActivityDetail[];
 }
 
-const ProcessTabComponent = ({ onActivityConfig }: ProcessTabComponentProps) => {
+const ProcessTabComponent = ({ onActivityConfig, onNodesChange, initialActivities }: ProcessTabComponentProps) => {
     const [selectedNode, setSelectedNode] = useState<{ id: string; type: string; label: string; data: any } | null>(null);
 
     return (
@@ -26,7 +29,12 @@ const ProcessTabComponent = ({ onActivityConfig }: ProcessTabComponentProps) => 
             <DashboardLeftSidebarComponent />
 
             {/* Main Canvas Area */}
-            <MainCanvasComponent onActivityConfig={onActivityConfig} onNodeSelect={setSelectedNode} />
+            <MainCanvasComponent
+                onActivityConfig={onActivityConfig}
+                onNodeSelect={setSelectedNode}
+                onNodesChange={onNodesChange}
+                initialActivities={initialActivities}
+            />
 
             {/* Right Properties Panel */}
             <DashboardRightPropertiesPanelComponent selectedNode={selectedNode} />

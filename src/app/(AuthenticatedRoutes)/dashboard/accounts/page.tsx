@@ -1,7 +1,7 @@
 import AccountsScreen from '@/screens/accounts-screen';
 
 export const metadata = {
-    title: 'RPA | Accounts',
+    title: 'QBOTZ | Accounts',
     description: 'Email accounts management page',
 };
 

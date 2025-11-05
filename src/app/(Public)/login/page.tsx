@@ -1,7 +1,7 @@
 import LoginComponent from '@/components/features/login/login'
 
 export const metadata = {
-    title: 'RPA | Login',
+    title: 'QBOTZ | Login',
     description: 'Login to your account'
 };
 

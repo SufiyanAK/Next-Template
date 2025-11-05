@@ -21,8 +21,6 @@ export const handleRefreshToken = async (message: string): Promise<boolean> => {
 
         const { status } = response;
 
-        console.log("Response from refresh token API: ", response);
-
         if (status === 200) {
             // Update tokens using AuthService
             // AuthService.setTokens(data.data.accessToken, data.data.refreshToken);

@@ -1,8 +1,9 @@
 'use client';
 
 import { BaseFormFieldsProps } from '@/screens/new-project-screen';
+import { MetaEnumProcessCategories } from '@/types/meta.types';
 import { colors } from '@/utils/customStyles';
-import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core';
+import { Button, Group, Select, Stack, TextInput, Textarea } from '@mantine/core';
 import { ArrowRight } from 'lucide-react';
 import { FC } from 'react';
 
@@ -10,8 +11,9 @@ interface BasicFormComponentProps {
     handleNext?: () => void;
     handleCancel?: () => void;
     baseFormFields: BaseFormFieldsProps;
-    baseFormFieldsError: { processName: string, description: string }
+    baseFormFieldsError: { name: string, description: string, processCategoryId: string }
     setBaseFormFields: (field: keyof BaseFormFieldsProps, value: string | number) => void;
+    processCategories: MetaEnumProcessCategories[];
 }
 
 
@@ -20,8 +22,15 @@ const BasicFormComponent: FC<BasicFormComponentProps> = ({
     handleCancel,
     baseFormFields,
     baseFormFieldsError,
-    setBaseFormFields
+    setBaseFormFields,
+    processCategories
 }) => {
+
+    // Convert process categories to select options
+    const categoryOptions = processCategories.map((category) => ({
+        value: category.id.toString(),
+        label: category.name
+    }));
 
     return (
         <Stack gap={24} px={16} py={24} style={{ border: `1px solid ${colors.light}`, borderRadius: '8px', backgroundColor: colors.white }}>
@@ -31,10 +40,10 @@ const BasicFormComponent: FC<BasicFormComponentProps> = ({
                     label="Process Name"
                     required
                     placeholder="Enter process name"
-                    value={baseFormFields.processName}
-                    error={baseFormFieldsError.processName}
+                    value={baseFormFields.name}
+                    error={baseFormFieldsError.name}
                     radius={6}
-                    onChange={(event) => setBaseFormFields('processName', event.currentTarget.value)}
+                    onChange={(event) => setBaseFormFields('name', event.currentTarget.value)}
                     size="md"
                     styles={{
                         label: {
@@ -72,6 +81,30 @@ const BasicFormComponent: FC<BasicFormComponentProps> = ({
                             '&:focus': {
                                 borderColor: colors.primary
                             }
+                        }
+                    }}
+                />
+            </Stack>
+
+            {/* Process Category Field */}
+            <Stack gap={6}>
+                <Select
+                    label="Process Category"
+                    required
+                    placeholder="Select a category"
+                    // value={baseFormFields.processCategoryId}
+                    error={baseFormFieldsError.processCategoryId}
+                    data={categoryOptions}
+                    radius={6}
+                    onChange={(value) => setBaseFormFields('processCategoryId', Number(value) || '')}
+                    size="md"
+                    styles={{
+                        label: {
+                            color: colors.textPrimary,
+                            marginBottom: '6px'
+                        },
+                        input: {
+                            borderColor: colors.light,
                         }
                     }}
                 />
