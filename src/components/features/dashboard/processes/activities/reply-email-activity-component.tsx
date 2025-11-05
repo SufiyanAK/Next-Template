@@ -27,11 +27,10 @@ import { useDashboard } from '@/contexts/dashboard-context';
 interface ReplyEmailActivityComponentProps {
     opened: boolean;
     onClose: () => void;
-    onSave?: (activityData: ReplyEmailActivity) => void;
     existingData?: any;
 }
 
-const ReplyEmailActivityComponent = ({ opened, onClose, onSave, existingData }: ReplyEmailActivityComponentProps) => {
+const ReplyEmailActivityComponent = ({ opened, onClose, existingData }: ReplyEmailActivityComponentProps) => {
     const { accountsList } = useAppSelector((state) => state.accountsState);
     const { meta } = useAppSelector((state) => state.metaState);
     const { processData, setProcessData } = useDashboard();

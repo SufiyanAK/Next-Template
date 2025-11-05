@@ -1,22 +1,20 @@
 'use client';
 
 import { colors } from '@/utils/customStyles';
-import { getDataStructuresSelect, getEmailOutputPropertiesSelect } from '@/utils/meta-helpers';
+import { getDataStructuresSelect } from '@/utils/meta-helpers';
 import { useAppSelector } from '@/store/store';
 import { Box, Button, CloseButton, Group, Modal, Stack, Text, TextInput, Select } from '@mantine/core';
 import { Code } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { AssignActivity } from '@/types/process.types';
 import { useDashboard } from '@/contexts/dashboard-context';
 
 interface AssignEmailActivityProps {
     opened: boolean;
     onClose: () => void;
-    onSave?: (activityData: AssignActivity) => void;
     existingData?: any;
 }
 
-const AssignEmailActivityComponent = ({ opened, onClose, onSave, existingData }: AssignEmailActivityProps) => {
+const AssignEmailActivityComponent = ({ opened, onClose, existingData }: AssignEmailActivityProps) => {
     const { meta } = useAppSelector((state) => state.metaState);
     const [variableName, setVariableName] = useState('');
     const [valueSource, setValueSource] = useState('subject');
